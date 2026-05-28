@@ -172,7 +172,8 @@ def safe_filename(method: str, path: str, params: dict[str, str]) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Capture golden masters from Go server")
     parser.add_argument("--base-url", required=True, help="Go server URL (e.g., https://localhost:9822)")
-    parser.add_argument("--auth-token", required=True, help="Bearer token for authentication")
+    parser.add_argument("--auth-token", required=True, help="API key or bearer token for authentication")
+    parser.add_argument("--auth-scheme", default="raw", choices=["raw", "bearer"], help="Auth header format: 'raw' sends key as-is, 'bearer' adds Bearer prefix")
     parser.add_argument("--output", default="tests/characterization/golden_masters/", help="Output directory")
     parser.add_argument("--verify-ssl", action="store_true", default=False, help="Verify SSL certificates")
     args = parser.parse_args()
@@ -180,10 +181,11 @@ def main() -> None:
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    auth_header = f"Bearer {args.auth_token}" if args.auth_scheme == "bearer" else args.auth_token
     client = httpx.Client(
         base_url=args.base_url,
         headers={
-            "Authorization": f"Bearer {args.auth_token}",
+            "Authorization": auth_header,
             "Accept": "application/json",
         },
         verify=args.verify_ssl,

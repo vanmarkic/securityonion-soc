@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-05-28T21:15:18Z",
+  "base_url": "http://localhost:9822",
+  "total_endpoints": 17,
+  "success": 14,
+  "errors": 3,
+  "files": [
+    "get_api_case.json",
+    "get_api_clients.json",
+    "get_api_config.json",
+    "get_api_config__advanced=true.json",
+    "get_api_events__eventLimit=5_format=2006-01-02T15:04:05Z_metricLimit=10_query=*_range=now-1h_zone=UTC.json",
+    "get_api_grid.json",
+    "get_api_gridmembers.json",
+    "get_api_info.json",
+    "get_api_jobs__kind=.json",
+    "get_api_node.json",
+    "get_api_query_active__filter=true.json",
+    "get_api_roles.json",
+    "get_api_roles_permissions.json",
+    "get_api_users.json"
+  ]
+}

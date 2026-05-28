@@ -1,0 +1,15 @@
+{
+  "method": "GET",
+  "path": "/api/jobs/",
+  "query_params": {
+    "kind": ""
+  },
+  "status_code": 200,
+  "response_body": [],
+  "response_content_type": "application/json",
+  "response_headers": {
+    "content-type": "application/json"
+  },
+  "non_deterministic_fields": [],
+  "captured_at": "2026-05-28T21:15:18Z"
+}

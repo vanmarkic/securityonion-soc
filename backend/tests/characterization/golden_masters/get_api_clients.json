@@ -1,0 +1,13 @@
+{
+  "method": "GET",
+  "path": "/api/clients/",
+  "query_params": {},
+  "status_code": 400,
+  "response_body": "ERROR_LICENSE_INVALID",
+  "response_content_type": "application/json",
+  "response_headers": {
+    "content-type": "application/json"
+  },
+  "non_deterministic_fields": [],
+  "captured_at": "2026-05-28T21:15:18Z"
+}

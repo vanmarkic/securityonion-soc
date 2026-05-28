@@ -1,0 +1,11 @@
+{
+  "method": "GET",
+  "path": "/api/node",
+  "query_params": {},
+  "status_code": 405,
+  "response_body": "",
+  "response_content_type": "",
+  "response_headers": {},
+  "non_deterministic_fields": [],
+  "captured_at": "2026-05-28T21:15:18Z"
+}

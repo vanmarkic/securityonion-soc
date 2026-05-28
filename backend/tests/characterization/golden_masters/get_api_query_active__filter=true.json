@@ -1,0 +1,15 @@
+{
+  "method": "GET",
+  "path": "/api/query/active",
+  "query_params": {
+    "filter": "true"
+  },
+  "status_code": 400,
+  "response_body": "ERROR_LICENSE_INVALID",
+  "response_content_type": "text/plain; charset=utf-8",
+  "response_headers": {
+    "content-type": "text/plain; charset=utf-8"
+  },
+  "non_deterministic_fields": [],
+  "captured_at": "2026-05-28T21:15:18Z"
+}
