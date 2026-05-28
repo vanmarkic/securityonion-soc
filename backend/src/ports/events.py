@@ -5,8 +5,10 @@ from __future__ import annotations
 from typing import Protocol, runtime_checkable
 
 from src.domain.event import (
+    EventAckCriteria,
     EventSearchCriteria,
     EventSearchResults,
+    EventUpdateResults,
 )
 
 
@@ -54,3 +56,7 @@ class Eventstore(Protocol):
     ) -> list[QueryTask]: ...
 
     async def cancel_query(self, query_id: str) -> None: ...
+
+    async def acknowledge(
+        self, criteria: EventAckCriteria,
+    ) -> EventUpdateResults: ...

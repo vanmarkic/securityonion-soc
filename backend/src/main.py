@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from src.api.case_routes import router as case_router
 from src.api.config_routes import router as config_router
 from src.api.detection_routes import router as detection_router
+from src.api.events_routes import router as events_router
 from src.api.grid_routes import router as grid_router
 from src.api.gridmembers_routes import router as gridmembers_router
 from src.api.info_routes import router as info_router
@@ -20,6 +21,7 @@ app.include_router(grid_router, prefix="/api")
 app.include_router(gridmembers_router, prefix="/api")
 app.include_router(case_router, prefix="/api")
 app.include_router(detection_router, prefix="/api")
+app.include_router(events_router, prefix="/api")
 app.include_router(query_router, prefix="/api")
 app.include_router(playbook_router, prefix="/api")
 app.include_router(stream_router, prefix="/api")

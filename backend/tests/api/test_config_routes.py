@@ -96,3 +96,110 @@ class TestPutSyncModuleNoConfigstore:
             resp = await c.put("/api/config/sync/soc")
         assert resp.status_code == 405
         assert "not enabled" in resp.json()["detail"].lower() or "not enabled" in resp.text.lower()
+
+
+# ===========================================================================
+# PUT /config/ and POST /config/ — putSetting
+# ===========================================================================
+
+class TestPutSetting:
+    """Ported from Go confighandler putSetting."""
+
+    async def test_put_setting_success(self, client, configstore):
+        resp = await client.put(
+            "/api/config/",
+            json={"id": "elastalert.alerter_parameters", "value": "newval"},
+        )
+        assert resp.status_code == 200
+        assert len(configstore.update_setting_calls) == 1
+        setting, remove = configstore.update_setting_calls[0]
+        assert setting.id == "elastalert.alerter_parameters"
+        assert setting.value == "newval"
+        assert remove is False
+
+    async def test_post_setting_success(self, client, configstore):
+        resp = await client.post(
+            "/api/config/",
+            json={"id": "soc.some_setting", "value": "val"},
+        )
+        assert resp.status_code == 200
+        assert len(configstore.update_setting_calls) == 1
+        setting, remove = configstore.update_setting_calls[0]
+        assert setting.id == "soc.some_setting"
+        assert remove is False
+
+    async def test_put_setting_with_node_id(self, client, configstore):
+        resp = await client.put(
+            "/api/config/",
+            json={"id": "soc.setting", "value": "v", "nodeId": "chi-so-001_standalone"},
+        )
+        assert resp.status_code == 200
+        setting, _ = configstore.update_setting_calls[0]
+        assert setting.node_id == "chi-so-001_standalone"
+
+    async def test_put_setting_invalid_id(self, client, configstore):
+        resp = await client.put(
+            "/api/config/",
+            json={"id": "invalid id with spaces", "value": "v"},
+        )
+        assert resp.status_code == 400
+
+    async def test_put_setting_invalid_node_id(self, client, configstore):
+        resp = await client.put(
+            "/api/config/",
+            json={"id": "soc.setting", "value": "v", "nodeId": "bad node id!"},
+        )
+        assert resp.status_code == 400
+
+    async def test_put_setting_invalid_body(self, client):
+        resp = await client.put(
+            "/api/config/",
+            content=b"not json",
+            headers={"content-type": "application/json"},
+        )
+        assert resp.status_code == 422
+
+
+# ===========================================================================
+# DELETE /config/, /config/{id}, /config/{id}/{minion} — deleteConfig
+# ===========================================================================
+
+class TestDeleteConfig:
+    """Ported from Go confighandler deleteConfig."""
+
+    async def test_delete_with_path_id(self, client, configstore):
+        resp = await client.delete("/api/config/elastalert.alerter_parameters")
+        assert resp.status_code == 200
+        assert len(configstore.update_setting_calls) == 1
+        setting, remove = configstore.update_setting_calls[0]
+        assert setting.id == "elastalert.alerter_parameters"
+        assert remove is True
+
+    async def test_delete_with_path_id_and_minion(self, client, configstore):
+        resp = await client.delete("/api/config/elastalert.alerter_parameters/chi-so-001_standalone")
+        assert resp.status_code == 200
+        assert len(configstore.update_setting_calls) == 1
+        setting, remove = configstore.update_setting_calls[0]
+        assert setting.id == "elastalert.alerter_parameters"
+        assert setting.node_id == "chi-so-001_standalone"
+        assert remove is True
+
+    async def test_delete_with_query_params(self, client, configstore):
+        resp = await client.delete("/api/config/?id=soc.setting&minion=node-1")
+        assert resp.status_code == 200
+        setting, remove = configstore.update_setting_calls[0]
+        assert setting.id == "soc.setting"
+        assert setting.node_id == "node-1"
+        assert remove is True
+
+    async def test_delete_invalid_id(self, client, configstore):
+        resp = await client.delete("/api/config/invalid id with spaces")
+        assert resp.status_code == 400
+
+    async def test_delete_invalid_minion(self, client, configstore):
+        resp = await client.delete("/api/config/soc.setting/bad minion!")
+        assert resp.status_code == 400
+
+    async def test_delete_no_id(self, client, configstore):
+        resp = await client.delete("/api/config/")
+        assert resp.status_code == 400
