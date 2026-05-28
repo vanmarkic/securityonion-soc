@@ -106,3 +106,53 @@ class TestUserstore:
         store: Userstore = FakeUserstore()
         user = await store.get_user_by_id("nonexistent")
         assert user is None
+
+
+class TestUserVerify:
+    def test_empty_user_is_valid(self):
+        user = User()
+        assert user.verify() is None
+
+    def test_id_too_long(self):
+        user = User(id="x" * 150)
+        err = user.verify()
+        assert err is not None
+        assert "ERROR_USER_ID_TOO_LONG" in str(err)
+
+    def test_id_at_limit_is_valid(self):
+        user = User(id="a" * 36)
+        assert user.verify() is None
+
+    def test_first_name_too_long(self):
+        user = User(first_name="x" * 150)
+        err = user.verify()
+        assert err is not None
+        assert "ERROR_FIRSTNAME_TOO_LONG" in str(err)
+
+    def test_last_name_too_long(self):
+        user = User(last_name="x" * 150)
+        err = user.verify()
+        assert err is not None
+        assert "ERROR_LASTNAME_TOO_LONG" in str(err)
+
+    def test_note_too_long(self):
+        user = User(note="x" * 150)
+        err = user.verify()
+        assert err is not None
+        assert "ERROR_NOTE_TOO_LONG" in str(err)
+
+    def test_role_too_long(self):
+        user = User(roles=["x" * 150])
+        err = user.verify()
+        assert err is not None
+        assert "ERROR_ROLE_TOO_LONG" in str(err)
+
+    def test_valid_user_full(self):
+        user = User(
+            id="1210614a-36ca-4df8-84c6-69f774424d5b",
+            first_name="Bob",
+            last_name="Smith",
+            note="Great guy, that Bob.",
+            roles=["test/read"],
+        )
+        assert user.verify() is None
