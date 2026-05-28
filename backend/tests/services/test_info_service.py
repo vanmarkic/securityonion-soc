@@ -1,6 +1,8 @@
 """Tests for the InfoService."""
 
 import json
+import os
+import tempfile
 from pathlib import Path
 
 from src.domain.info import Info, LicenseKey
@@ -187,3 +189,96 @@ class TestInfoService:
         )
         result = await service.get_info(user_id="nonexistent")
         assert result.force_user_otp is False
+
+
+class TestGetCustomReports:
+    """Ported from Go server/infohandler_test.go TestInfoHandler_getCustomReports."""
+
+    def test_empty_directory(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = InfoService.get_custom_reports(tmpdir)
+            assert result == {}
+
+    def test_md_files_with_titles(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            Path(tmpdir, "report1.md").write_text(
+                "Test Report 1\n===============\nContent here"
+            )
+            Path(tmpdir, "report2.md").write_text(
+                "Another Report\n==============\nMore content"
+            )
+            Path(tmpdir, "not_markdown.txt").write_text(
+                "This should be ignored"
+            )
+            result = InfoService.get_custom_reports(tmpdir)
+            assert result == {
+                "report1.md": "Test Report 1",
+                "report2.md": "Another Report",
+            }
+
+    def test_md_file_without_title_format(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            Path(tmpdir, "simple.md").write_text(
+                "# Simple Header\nNo underline format"
+            )
+            result = InfoService.get_custom_reports(tmpdir)
+            assert result == {"simple.md": "simple.md"}
+
+    def test_mixed_files_and_subdirectories(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            Path(tmpdir, "report.md").write_text(
+                "Valid Report\n=============\nContent"
+            )
+            subdir = Path(tmpdir, "subdir")
+            subdir.mkdir()
+            Path(subdir, "nested.md").write_text(
+                "Should be ignored as it's in subdir"
+            )
+            result = InfoService.get_custom_reports(tmpdir)
+            assert result == {"report.md": "Valid Report"}
+
+    def test_nonexistent_directory(self):
+        result = InfoService.get_custom_reports("/nonexistent/path")
+        assert result == {}
+
+    def test_good_report_read(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            Path(tmpdir, "good.md").write_text(
+                "Good Report\n===========\nContent"
+            )
+            result = InfoService.get_custom_reports(tmpdir)
+            assert result == {"good.md": "Good Report"}
+
+
+class TestParseReportTitle:
+    """Ported from Go server/infohandler_test.go TestInfoHandler_parseReportTitle."""
+
+    def test_valid_title_with_equals_underline(self):
+        content = "My Report Title\n===============\nSome content here"
+        assert InfoService.parse_report_title(content, "default.md") == "My Report Title"
+
+    def test_multiple_underlines_first_wins(self):
+        content = "First Title\n===========\nContent\nSecond Title\n============\nMore content"
+        assert InfoService.parse_report_title(content, "default.md") == "First Title"
+
+    def test_no_valid_title_format(self):
+        content = "# Header\nSome content\n## Another header"
+        assert InfoService.parse_report_title(content, "fallback.md") == "fallback.md"
+
+    def test_empty_content(self):
+        assert InfoService.parse_report_title("", "empty.md") == "empty.md"
+
+    def test_only_underline_without_title(self):
+        content = "===============\nContent"
+        assert InfoService.parse_report_title(content, "noTitle.md") == "noTitle.md"
+
+    def test_title_with_whitespace(self):
+        content = "   Trimmed Title   \n===================\nContent"
+        assert InfoService.parse_report_title(content, "default.md") == "Trimmed Title"
+
+    def test_underline_too_short(self):
+        content = "Title Here\n===\nContent"
+        assert InfoService.parse_report_title(content, "short.md") == "Title Here"
+
+    def test_single_line_content(self):
+        assert InfoService.parse_report_title("Just one line", "single.md") == "single.md"

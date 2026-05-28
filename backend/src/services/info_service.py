@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import logging
+import os
+
 from src.domain.info import Info
 from src.ports.info import InfoProvider
 from src.ports.users import Userstore
+
+logger = logging.getLogger(__name__)
 
 
 class InfoService:
@@ -42,3 +47,48 @@ class InfoService:
             custom_reports={},
             subgrids=[],
         )
+
+    @staticmethod
+    def get_custom_reports(path: str) -> dict[str, str]:
+        """Scan a directory for .md files and extract titles.
+
+        Ported from Go server/infohandler.go getCustomReports.
+        """
+        reports: dict[str, str] = {}
+        try:
+            entries = os.listdir(path)
+        except OSError:
+            logger.error("Failed to read custom reports directory: %s", path)
+            return reports
+
+        for name in entries:
+            full_path = os.path.join(path, name)
+            if os.path.isdir(full_path):
+                continue
+            if not name.endswith(".md"):
+                continue
+            try:
+                with open(full_path) as f:
+                    content = f.read()
+            except OSError:
+                logger.error("Failed to read custom report file: %s", full_path)
+                continue
+            title = InfoService.parse_report_title(content, name)
+            reports[name] = title
+
+        return reports
+
+    @staticmethod
+    def parse_report_title(content: str, default: str) -> str:
+        """Extract title from rst-style underline format, falling back to default.
+
+        Ported from Go server/infohandler.go parseReportTitle.
+        Looks for a line followed by a line starting with "===".
+        """
+        prev_line = ""
+        for line in content.split("\n"):
+            stripped = line.strip()
+            if line.startswith("===") and prev_line != "":
+                return prev_line
+            prev_line = stripped
+        return default
