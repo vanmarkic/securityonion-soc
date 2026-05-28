@@ -15,6 +15,7 @@ from src.api.case_routes import (
 )
 from src.domain.case import (
     Artifact,
+    ArtifactStream,
     Case,
     Comment,
     RelatedEvent,
@@ -48,6 +49,8 @@ class FakeCasestore:
         self.events_to_return: list[RelatedEvent] = []
         self.artifacts_to_return: list[Artifact] = []
         self.history_to_return: list[Any] = []
+        self.artifact_to_return: Artifact | None = None
+        self.artifact_stream_to_return: ArtifactStream | None = None
         self.related_events_created_count: int = 0
         self.related_events_err_map: dict[str, str] = {}
         self.related_events_error: str | None = None
@@ -137,7 +140,9 @@ class FakeCasestore:
         return artifact
 
     async def get_artifact(self, artifact_id: str) -> Artifact | None:
-        return None
+        if self.error:
+            raise self.error
+        return self.artifact_to_return
 
     async def get_artifacts(
         self, case_id: str, group_type: str, group_id: str,
@@ -160,8 +165,10 @@ class FakeCasestore:
     async def create_artifact_stream(self, stream: Any) -> str:
         return "new-stream-id"
 
-    async def get_artifact_stream(self, stream_id: str) -> Any:
-        return None
+    async def get_artifact_stream(self, stream_id: str) -> ArtifactStream | None:
+        if self.error:
+            raise self.error
+        return self.artifact_stream_to_return
 
     async def delete_artifact_stream(self, stream_id: str) -> None:
         pass
@@ -547,3 +554,194 @@ class TestGetCaseHistory:
         fake_store.error = Exception("not found")
         resp = await client.get("/api/case/history/missing")
         assert resp.status_code == 404
+
+
+# ===========================================================================
+# POST /case/events — CreateEvents (async attach, returns 202)
+# ===========================================================================
+
+class TestCreateEvents:
+    async def test_create_events_returns_202(self, client, fake_store):
+        fake_store.related_events_created_count = 2
+        resp = await client.post(
+            "/api/case/events",
+            json={
+                "caseId": "case-1",
+                "fields": {"soc_id": "event-1"},
+            },
+        )
+        assert resp.status_code == 202
+        data = resp.json()
+        assert "count" in data
+
+    async def test_create_events_invalid_body(self, client):
+        resp = await client.post(
+            "/api/case/events",
+            content=b"not json",
+            headers={"content-type": "application/json"},
+        )
+        assert resp.status_code == 422
+
+    async def test_create_events_store_error(self, client, fake_store):
+        fake_store.error = Exception("db error")
+        resp = await client.post(
+            "/api/case/events",
+            json={"caseId": "case-1", "fields": {"soc_id": "e1"}},
+        )
+        assert resp.status_code == 500
+
+
+# ===========================================================================
+# POST /case/tasks — alias for createArtifact
+# ===========================================================================
+
+class TestCreateTask:
+    async def test_create_task_success(self, client, fake_store):
+        resp = await client.post(
+            "/api/case/tasks",
+            json={"caseId": "case-1", "value": "malware.exe", "artifactType": "file"},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["id"] == "new-artifact-id"
+        assert len(fake_store.created_artifacts) == 1
+
+    async def test_create_task_invalid_body(self, client):
+        resp = await client.post(
+            "/api/case/tasks",
+            content=b"bad",
+            headers={"content-type": "application/json"},
+        )
+        assert resp.status_code == 422
+
+
+# ===========================================================================
+# GET /case/tasks/{id} and GET /case/artifactstream/{id} — artifact stream
+# ===========================================================================
+
+class TestGetArtifactStream:
+    async def test_get_artifact_stream_via_tasks(self, client, fake_store):
+        stream = ArtifactStream()
+        stream.write(b"file content here")
+        fake_store.artifact_to_return = Artifact(
+            id="a1",
+            case_id="case-1",
+            value="evidence.txt",
+            stream_id="stream-1",
+            stream_len=17,
+            protected=False,
+        )
+        fake_store.artifact_stream_to_return = stream
+
+        resp = await client.get("/api/case/tasks/a1")
+        assert resp.status_code == 200
+        assert resp.content == b"file content here"
+        assert resp.headers["content-type"] == "application/octet-stream"
+        assert 'filename="evidence.txt"' in resp.headers["content-disposition"]
+
+    async def test_get_artifact_stream_via_artifactstream(self, client, fake_store):
+        stream = ArtifactStream()
+        stream.write(b"binary data")
+        fake_store.artifact_to_return = Artifact(
+            id="a2",
+            case_id="case-1",
+            value="capture.pcap",
+            stream_id="stream-2",
+            stream_len=11,
+            protected=False,
+        )
+        fake_store.artifact_stream_to_return = stream
+
+        resp = await client.get("/api/case/artifactstream/a2")
+        assert resp.status_code == 200
+        assert resp.content == b"binary data"
+
+    async def test_get_artifact_stream_not_found(self, client, fake_store):
+        fake_store.artifact_to_return = None
+        resp = await client.get("/api/case/tasks/missing")
+        assert resp.status_code == 404
+
+    async def test_get_artifact_stream_via_query_param(self, client, fake_store):
+        stream = ArtifactStream()
+        stream.write(b"data")
+        fake_store.artifact_to_return = Artifact(
+            id="a3",
+            case_id="case-1",
+            value="output.bin",
+            stream_id="stream-3",
+            stream_len=4,
+            protected=False,
+        )
+        fake_store.artifact_stream_to_return = stream
+
+        resp = await client.get("/api/case/tasks?id=a3")
+        assert resp.status_code == 200
+        assert resp.content == b"data"
+
+
+# ===========================================================================
+# GET /case/comments — query-param variant (no path param)
+# ===========================================================================
+
+class TestGetCommentsQueryParam:
+    async def test_get_comments_by_query_param(self, client, fake_store):
+        fake_store.comments_to_return = [
+            Comment(id="c1", case_id="case-1", description="Comment 1"),
+        ]
+        resp = await client.get("/api/case/comments?id=case-1")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert len(data) == 1
+        assert data[0]["id"] == "c1"
+
+
+# ===========================================================================
+# GET /case/events — query-param variant (no path param)
+# ===========================================================================
+
+class TestGetEventsQueryParam:
+    async def test_get_events_by_query_param(self, client, fake_store):
+        fake_store.events_to_return = [
+            RelatedEvent(id="e1", case_id="case-1", fields={"soc_id": "1"}),
+        ]
+        resp = await client.get("/api/case/events?id=case-1")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert len(data) == 1
+        assert data[0]["id"] == "e1"
+
+
+# ===========================================================================
+# GET /case/history — query-param variant (no path param)
+# ===========================================================================
+
+class TestGetHistoryQueryParam:
+    async def test_get_history_by_query_param(self, client, fake_store):
+        fake_store.history_to_return = [
+            {"id": "h1", "operation": "create"},
+        ]
+        resp = await client.get("/api/case/history?id=case-1")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert len(data) == 1
+
+
+# ===========================================================================
+# DELETE /case/tasks/{id} — alias for deleteArtifact
+# ===========================================================================
+
+class TestDeleteTask:
+    async def test_delete_task_success(self, client, fake_store):
+        resp = await client.delete("/api/case/tasks/a1")
+        assert resp.status_code == 200
+        assert "a1" in fake_store.deleted_artifact_ids
+
+    async def test_delete_task_via_query_param(self, client, fake_store):
+        resp = await client.delete("/api/case/tasks?id=a2")
+        assert resp.status_code == 200
+        assert "a2" in fake_store.deleted_artifact_ids
+
+    async def test_delete_task_store_error(self, client, fake_store):
+        fake_store.error = Exception("db error")
+        resp = await client.delete("/api/case/tasks/a1")
+        assert resp.status_code == 500

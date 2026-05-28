@@ -156,3 +156,17 @@ def new_artifact() -> Artifact:
 def new_artifact_stream() -> ArtifactStream:
     now = datetime.now(timezone.utc)
     return ArtifactStream(create_time=now)
+
+
+class AttachEventCriteria(BaseModel):
+    """Criteria for attaching events to a case (POST /case/events)."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    case_id: str = Field(default="", alias="caseId")
+    fields: dict[str, object] = Field(default_factory=dict)
+    date_range: str = Field(default="", alias="dateRange")
+    date_range_format: str = Field(default="", alias="dateRangeFormat")
+    timezone: str = ""
+    acknowledged: bool = False
+    escalated: bool = False

@@ -8,6 +8,7 @@ from typing import Any
 from src.domain.case import (
     Artifact,
     ArtifactStream,
+    AttachEventCriteria,
     Case,
     Comment,
     RelatedEvent,
@@ -63,6 +64,18 @@ class CaseService:
         self, events: list[RelatedEvent],
     ) -> tuple[int, dict[str, str], None | str]:
         return await self._store.create_related_events(events)
+
+    async def attach_events(self, criteria: AttachEventCriteria) -> int:
+        """Attach events to a case based on criteria.
+
+        In the Go implementation this does an async search + bulk create.
+        Here we build RelatedEvents from the criteria fields and delegate
+        to the store. Returns the count of events queued.
+        """
+        event = RelatedEvent(case_id=criteria.case_id, fields=criteria.fields)
+        events = [event]
+        count, _, _ = await self._store.create_related_events(events)
+        return count
 
     # -- Artifact CRUD --
 
