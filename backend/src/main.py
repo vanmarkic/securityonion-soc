@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from src.api.assistant_routes import router as assistant_router
 from src.api.case_routes import router as case_router
 from src.api.clients_routes import router as clients_router
 from src.api.config_routes import router as config_router
@@ -21,6 +22,7 @@ from src.api.util_routes import router as util_router
 
 app = FastAPI(title="SecurityOnion SOC", version="0.1.0")
 
+app.include_router(assistant_router, prefix="/api")
 app.include_router(info_router, prefix="/api")
 app.include_router(config_router, prefix="/api")
 app.include_router(util_router, prefix="/api")
