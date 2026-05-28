@@ -10,6 +10,7 @@ from src.api.jobs_routes import router as jobs_router
 from src.api.grid_routes import router as grid_router
 from src.api.gridmembers_routes import router as gridmembers_router
 from src.api.info_routes import router as info_router
+from src.api.node_routes import router as node_router
 from src.api.playbook_routes import router as playbook_router
 from src.api.query_routes import router as query_router
 from src.api.roles_routes import router as roles_router
@@ -29,6 +30,7 @@ app.include_router(detection_router, prefix="/api")
 app.include_router(events_router, prefix="/api")
 app.include_router(job_router, prefix="/api")
 app.include_router(jobs_router, prefix="/api")
+app.include_router(node_router, prefix="/api")
 app.include_router(query_router, prefix="/api")
 app.include_router(playbook_router, prefix="/api")
 app.include_router(stream_router, prefix="/api")
