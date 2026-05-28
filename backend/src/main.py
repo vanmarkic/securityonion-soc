@@ -6,6 +6,7 @@ from src.api.detection_routes import router as detection_router
 from src.api.grid_routes import router as grid_router
 from src.api.gridmembers_routes import router as gridmembers_router
 from src.api.info_routes import router as info_router
+from src.api.playbook_routes import router as playbook_router
 from src.api.query_routes import router as query_router
 from src.api.util_routes import router as util_router
 
@@ -19,6 +20,7 @@ app.include_router(gridmembers_router, prefix="/api")
 app.include_router(case_router, prefix="/api")
 app.include_router(detection_router, prefix="/api")
 app.include_router(query_router, prefix="/api")
+app.include_router(playbook_router, prefix="/api")
 
 
 @app.get("/api/health")
