@@ -11,9 +11,22 @@ No ``async``, no network: pure transforms over already-decoded JSON dicts.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from src.adapters.elasticsearch.field_caps import FieldDefinition, unmap_elastic_field
+from src.domain.case import (
+    Artifact,
+    ArtifactStream,
+    Case,
+    Comment,
+    RelatedEvent,
+)
+from src.domain.detection import (
+    Detection,
+    DetectionComment,
+    Override,
+    OverrideParameters,
+)
 from src.domain.event import (
     EventMetric,
     EventMSearchResults,
@@ -209,3 +222,339 @@ def parse_msearch_results(
             return e
         res.responses.append(sub)
     return None
+
+
+# ---------------------------------------------------------------------------
+# Domain-object converters (TASK 9)
+#
+# Port of the ``convertElasticEventTo*`` family from converter.go. Each maps a
+# flattened EventRecord payload (dotted ``<prefix><kind>.<field>`` keys) into a
+# pydantic domain model. Field absence leaves the model default untouched (Go
+# only assigns inside ``if value, ok := ...; ok``).
+# ---------------------------------------------------------------------------
+
+
+def convert_severity(sev: str) -> str:
+    """Port of convertSeverity: numeric -> label, else lowercase passthrough."""
+    s = sev.lower()
+    if not s:
+        return "high"
+    return {"1": "low", "2": "medium", "3": "high", "4": "critical"}.get(s, s)
+
+
+def _parse_object_time(payload: dict[str, Any], key: str) -> datetime | None:
+    """Port of parseTime for object converters.
+
+    Returns the stored datetime (already a datetime in the flattened payload),
+    a datetime parsed from an RFC3339 string, or None when absent/unparseable.
+    Go returns the zero time.Time for a missing/unparseable key; here we use
+    None so the pydantic optional default is preserved.
+    """
+    value = payload.get(key)
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, str):
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    return None
+
+
+def _fill_auditable(model: Any, rec: EventRecord, prefix: str) -> None:
+    """Port of convertElasticEventToAuditable (id/update_time/kind/operation)."""
+    model.id = rec.id
+    model.update_time = rec.time
+    payload = rec.payload
+    kind = payload.get(prefix + "kind")
+    if kind is not None:
+        model.kind = kind
+    operation = payload.get(prefix + "operation")
+    if operation is not None:
+        model.operation = operation
+
+
+def convert_elastic_event_to_case(rec: EventRecord | None, prefix: str) -> Case | None:
+    if rec is None:
+        return None
+    p = rec.payload
+    c = Case()
+    _fill_auditable(c, rec, prefix)
+    base = prefix + "case."
+    if base + "title" in p:
+        c.title = p[base + "title"]  # type: ignore[assignment]
+    if base + "description" in p:
+        c.description = p[base + "description"]  # type: ignore[assignment]
+    if base + "priority" in p:
+        c.priority = int(cast(float, p[base + "priority"]))
+    if base + "severity" in p:
+        c.severity = convert_severity(p[base + "severity"])  # type: ignore[arg-type]
+    if base + "status" in p:
+        c.status = p[base + "status"]  # type: ignore[assignment]
+    if base + "template" in p:
+        c.template = p[base + "template"]  # type: ignore[assignment]
+    if base + "userId" in p:
+        c.user_id = p[base + "userId"]  # type: ignore[assignment]
+    if base + "assigneeId" in p:
+        c.assignee_id = p[base + "assigneeId"]  # type: ignore[assignment]
+    if base + "tlp" in p:
+        c.tlp = p[base + "tlp"]  # type: ignore[assignment]
+    if base + "category" in p:
+        c.category = p[base + "category"]  # type: ignore[assignment]
+    if base + "pap" in p:
+        c.pap = p[base + "pap"]  # type: ignore[assignment]
+    tags = p.get(base + "tags")
+    if tags is not None:
+        c.tags = [str(t) for t in cast("list[Any]", tags)]
+    c.create_time = _parse_object_time(p, base + "createTime")
+    c.start_time = _parse_object_time(p, base + "startTime")
+    c.complete_time = _parse_object_time(p, base + "completeTime")
+    return c
+
+
+def convert_elastic_event_to_comment(
+    rec: EventRecord | None, prefix: str, *, feat_ttr: bool = False
+) -> Comment | None:
+    if rec is None:
+        return None
+    p = rec.payload
+    obj = Comment()
+    _fill_auditable(obj, rec, prefix)
+    base = prefix + "comment."
+    if base + "description" in p:
+        obj.description = p[base + "description"]  # type: ignore[assignment]
+    if base + "userId" in p:
+        obj.user_id = p[base + "userId"]  # type: ignore[assignment]
+    if base + "caseId" in p:
+        obj.case_id = p[base + "caseId"]  # type: ignore[assignment]
+    if feat_ttr and base + "hours" in p:
+        obj.hours = float(cast(float, p[base + "hours"]))
+    obj.create_time = _parse_object_time(p, base + "createTime")
+    return obj
+
+
+def convert_elastic_event_to_detection_comment(
+    rec: EventRecord | None, prefix: str
+) -> DetectionComment | None:
+    if rec is None:
+        return None
+    p = rec.payload
+    obj = DetectionComment()
+    _fill_auditable(obj, rec, prefix)
+    base = prefix + "detectioncomment."
+    if base + "value" in p:
+        obj.value = p[base + "value"]  # type: ignore[assignment]
+    if base + "userId" in p:
+        obj.user_id = p[base + "userId"]  # type: ignore[assignment]
+    if base + "detectionId" in p:
+        obj.detection_id = p[base + "detectionId"]  # type: ignore[assignment]
+    obj.create_time = _parse_object_time(p, base + "createTime")
+    return obj
+
+
+def convert_elastic_event_to_related_event(
+    rec: EventRecord | None, prefix: str
+) -> RelatedEvent | None:
+    if rec is None:
+        return None
+    p = rec.payload
+    obj = RelatedEvent()
+    _fill_auditable(obj, rec, prefix)
+    fp = prefix + "related.fields."
+    obj.fields = {k[len(fp):]: v for k, v in p.items() if k.startswith(fp)}
+    if prefix + "related.userId" in p:
+        obj.user_id = p[prefix + "related.userId"]  # type: ignore[assignment]
+    if prefix + "related.caseId" in p:
+        obj.case_id = p[prefix + "related.caseId"]  # type: ignore[assignment]
+    obj.create_time = _parse_object_time(p, prefix + "related.createTime")
+    return obj
+
+
+def convert_elastic_event_to_artifact(
+    rec: EventRecord | None, prefix: str
+) -> Artifact | None:
+    if rec is None:
+        return None
+    p = rec.payload
+    obj = Artifact()
+    _fill_auditable(obj, rec, prefix)
+    base = prefix + "artifact."
+    if base + "userId" in p:
+        obj.user_id = p[base + "userId"]  # type: ignore[assignment]
+    if base + "caseId" in p:
+        obj.case_id = p[base + "caseId"]  # type: ignore[assignment]
+    if base + "groupType" in p:
+        obj.group_type = p[base + "groupType"]  # type: ignore[assignment]
+    if base + "groupId" in p:
+        obj.group_id = p[base + "groupId"]  # type: ignore[assignment]
+    if base + "description" in p:
+        obj.description = p[base + "description"]  # type: ignore[assignment]
+    if base + "artifactType" in p:
+        obj.artifact_type = p[base + "artifactType"]  # type: ignore[assignment]
+    if base + "streamLength" in p:
+        obj.stream_len = int(cast(float, p[base + "streamLength"]))
+    if base + "streamId" in p:
+        obj.stream_id = p[base + "streamId"]  # type: ignore[assignment]
+    if base + "mimeType" in p:
+        obj.mime_type = p[base + "mimeType"]  # type: ignore[assignment]
+    if base + "value" in p:
+        obj.value = p[base + "value"]  # type: ignore[assignment]
+    if base + "tlp" in p:
+        obj.tlp = p[base + "tlp"]  # type: ignore[assignment]
+    tags = p.get(base + "tags")
+    if tags is not None:
+        obj.tags = [str(t) for t in cast("list[Any]", tags)]
+    if base + "ioc" in p:
+        obj.ioc = bool(p[base + "ioc"])
+    if base + "md5" in p:
+        obj.md5 = p[base + "md5"]  # type: ignore[assignment]
+    if base + "sha1" in p:
+        obj.sha1 = p[base + "sha1"]  # type: ignore[assignment]
+    if base + "sha256" in p:
+        obj.sha256 = p[base + "sha256"]  # type: ignore[assignment]
+    if base + "protected" in p:
+        obj.protected = bool(p[base + "protected"])
+    obj.create_time = _parse_object_time(p, base + "createTime")
+    return obj
+
+
+def convert_elastic_event_to_artifact_stream(
+    rec: EventRecord | None, prefix: str
+) -> ArtifactStream | None:
+    if rec is None:
+        return None
+    p = rec.payload
+    obj = ArtifactStream()
+    _fill_auditable(obj, rec, prefix)
+    base = prefix + "artifactstream."
+    if base + "userId" in p:
+        obj.user_id = p[base + "userId"]  # type: ignore[assignment]
+    if base + "content" in p:
+        obj.content = p[base + "content"]  # type: ignore[assignment]
+    obj.create_time = _parse_object_time(p, base + "createTime")
+    return obj
+
+
+def _override_param(override: dict[str, Any], key: str) -> str | None:
+    value = override.get(key)
+    return str(value) if value is not None else None
+
+
+def convert_elastic_event_to_override(overrides: list[Any]) -> list[Override]:
+    """Port of convertElasticEventToOverride.
+
+    Each entry is a flat dict; track/ip/count/seconds/etc. nest under the
+    pydantic ``override_parameters`` while type/isEnabled/note/timestamps stay
+    on the Override itself.
+    """
+    out: list[Override] = []
+    for entry in overrides:
+        if not isinstance(entry, dict):
+            continue
+        ov = Override()
+        params = OverrideParameters()
+        if entry.get("type") is not None:
+            ov.type = str(entry["type"])
+        if "isEnabled" in entry:
+            ov.is_enabled = bool(entry["isEnabled"])
+        if entry.get("note") is not None:
+            ov.note = str(entry["note"])
+        ov.created_at = _parse_object_time(entry, "createdAt")
+        ov.updated_at = _parse_object_time(entry, "updatedAt")
+        if entry.get("thresholdType") is not None:
+            params.threshold_type = str(entry["thresholdType"])
+        if entry.get("regex") is not None:
+            params.regex = str(entry["regex"])
+        if entry.get("value") is not None:
+            params.value = str(entry["value"])
+        if entry.get("ip") is not None:
+            params.ip = str(entry["ip"])
+        if entry.get("track") is not None:
+            params.track = str(entry["track"])
+        if entry.get("count") is not None:
+            params.count = int(entry["count"])
+        if entry.get("seconds") is not None:
+            params.seconds = int(entry["seconds"])
+        if entry.get("customFilter") is not None:
+            params.custom_filter = str(entry["customFilter"])
+        ov.override_parameters = params
+        out.append(ov)
+    return out
+
+
+def convert_elastic_event_to_detection(
+    rec: EventRecord | None, prefix: str
+) -> Detection | None:
+    if rec is None:
+        return None
+    p = rec.payload
+    obj = Detection()
+    _fill_auditable(obj, rec, prefix)
+    base = prefix + "detection."
+    if base + "userId" in p:
+        obj.user_id = p[base + "userId"]  # type: ignore[assignment]
+    if base + "publicId" in p:
+        obj.public_id = p[base + "publicId"]  # type: ignore[assignment]
+    if base + "title" in p:
+        obj.title = p[base + "title"]  # type: ignore[assignment]
+    if base + "severity" in p:
+        obj.severity = p[base + "severity"]  # type: ignore[assignment]
+    if base + "author" in p:
+        obj.author = p[base + "author"]  # type: ignore[assignment]
+    if base + "description" in p:
+        obj.description = p[base + "description"]  # type: ignore[assignment]
+    if base + "content" in p:
+        obj.content = p[base + "content"]  # type: ignore[assignment]
+    if base + "isEnabled" in p:
+        obj.is_enabled = bool(p[base + "isEnabled"])
+    if base + "isReporting" in p:
+        obj.is_reporting = bool(p[base + "isReporting"])
+    if base + "isCommunity" in p:
+        obj.is_community = bool(p[base + "isCommunity"])
+    ruleset = p.get(base + "ruleset")
+    if base + "ruleset" in p and ruleset is not None:
+        obj.ruleset = str(ruleset)
+    if base + "engine" in p:
+        obj.engine = p[base + "engine"]  # type: ignore[assignment]
+    if base + "language" in p:
+        obj.language = p[base + "language"]  # type: ignore[assignment]
+    if base + "license" in p:
+        obj.license = p[base + "license"]  # type: ignore[assignment]
+    tags = p.get(base + "tags")
+    if tags is not None:
+        obj.tags = [str(t) for t in cast("list[Any]", tags)]
+    obj.source_created = _parse_object_time(p, base + "sourceCreated")
+    obj.source_updated = _parse_object_time(p, base + "sourceUpdated")
+    overrides = p.get(base + "overrides")
+    if overrides is not None:
+        obj.overrides = convert_elastic_event_to_override(cast("list[Any]", overrides))
+    obj.create_time = _parse_object_time(p, base + "createTime")
+    return obj
+
+
+def convert_elastic_event_to_object(
+    rec: EventRecord, prefix: str
+) -> tuple[Any, str | None]:
+    """Port of convertElasticEventToObject dispatch.
+
+    Missing ``<prefix>kind`` -> (None, "Unknown object kind; id=<id>").
+    Present but unrecognized kind -> (None, None) (matches Go's empty switch).
+    """
+    kind = rec.payload.get(prefix + "kind")
+    if kind is None:
+        return None, f"Unknown object kind; id={rec.id}"
+    fn = _DISPATCH.get(str(kind))
+    if fn is None:
+        return None, None
+    return fn(rec, prefix), None
+
+
+_DISPATCH: dict[str, Any] = {
+    "case": convert_elastic_event_to_case,
+    "comment": convert_elastic_event_to_comment,
+    "detectioncomment": convert_elastic_event_to_detection_comment,
+    "related": convert_elastic_event_to_related_event,
+    "artifact": convert_elastic_event_to_artifact,
+    "artifactstream": convert_elastic_event_to_artifact_stream,
+    "detection": convert_elastic_event_to_detection,
+}
