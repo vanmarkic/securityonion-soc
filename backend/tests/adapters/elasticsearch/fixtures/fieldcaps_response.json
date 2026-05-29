@@ -1,0 +1,7662 @@
+{
+  "indices": [
+    "securityonion:endgame-2021.10.19",
+    "securityonion:endgame-2021.10.20",
+    "securityonion:so-elasticsearch-2021.10.19",
+    "securityonion:so-elasticsearch-2021.10.20",
+    "securityonion:so-kibana-2021.10.19",
+    "securityonion:so-kibana-2021.10.20"
+  ],
+  "fields": {
+    "container.image.tag": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.group": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "smb.service.keyword" : {
+      "keyword" : {
+        "type" : "keyword",
+        "searchable" : true,
+        "aggregatable" : true
+      }
+    },
+    "kibana.log.meta.type": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "smb.service" : {
+      "text" : {
+        "type" : "text",
+        "searchable" : true,
+        "aggregatable" : false
+      }
+    },
+    "dns.answers.data": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.type": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "kibana.log.meta.req.headers.x-forwarded-proto": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "url.query": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.user.full_name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request.method.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "event.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.full_name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.geo.region_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.thread.id": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.group.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.syslog.severity.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.user.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "user_agent.original": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "file.created": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os.platform": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.full_name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination.geo.continent_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.supported_ciphers": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.provider": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.origin.function": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.pe.original_file_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "service.ephemeral_id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.geo.region_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.command_line.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "process.parent.pgid": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.x-forwarded-proto.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.upgrade-insecure-requests.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.geo.city_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "related.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.code_signature": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.pe.product": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.header_flags": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.pe.product": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.checksum": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.as.organization": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "tls.client.issuer": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.tags.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "process.working_directory.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "metadata.action": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.os.platform": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.group.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.message": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "tls.server.not_before": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.opcode": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.geo.country_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dns.question": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "log.syslog.facility.code": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "registry.value": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud.instance": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "source.user.group.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.next_protocol": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.code_signature.exists": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.timezone.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "registry.hive": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "rule.ruleset": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "package.architecture": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.original.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.target_path.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "process.parent.working_directory": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.registered_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.as.organization.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "server.user.full_name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "vulnerability.score": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.user.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "_routing": {
+      "_routing": {
+        "type": "_routing",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "package.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_doc_count": {
+      "integer": {
+        "type": "integer",
+        "metadata_field": true,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "threat.tactic": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "elasticsearch.node.name.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "registry.data": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.file": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "network.inner.vlan": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.parent.executable.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination_geo.latitude": {
+      "half_float": {
+        "type": "half_float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.address.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "file.code_signature.subject_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.installed": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.full_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.parent.code_signature.valid": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.level.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request.body.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "group.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination_geo.longitude": {
+      "half_float": {
+        "type": "half_float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.uid": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.hash.sha512": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.group.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "endgame.data.quarantine_result.local_msg": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.score.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "url.full": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.nat.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.origin.file.line": {
+      "integer": {
+        "type": "integer",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dns.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "message": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "rule.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.response.body.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "user_agent.device": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "tls": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.host": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "process.pe": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "rule.category": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.hostname.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "dns.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "endgame.event_type_full": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.upgrade-insecure-requests": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "event.category": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "event.dataset.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.command_line": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.pid": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.email": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.code_signature.exists": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.group.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "container.image.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.geo.region_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.top_level_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.title": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url.fragment": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-mode.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "file.code_signature.status": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.certificate": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.reference": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.logon": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "registry.data.strings": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.response.body": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "intel": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host.architecture": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "geoip.latitude": {
+      "half_float": {
+        "type": "half_float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_source": {
+      "_source": {
+        "type": "_source",
+        "metadata_field": true,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host.geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.group": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dll.code_signature": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "user.effective.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "network.inner.vlan.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url.scheme": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.score.temporal": {
+      "float": {
+        "type": "float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.forwarded_ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.email": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "endgame.data": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.os.kernel": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.tags.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.geo.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.ephemeral_id.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.nat": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.pe.file_version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "ecs.version.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "winlog.logon.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url.full.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "tls.client.server_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.pe.company": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.reference": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.response_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.accept-encoding.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "client.registered_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.top_level_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.pe.imphash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.hash": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "event.category.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.provider_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.geo.continent_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.effective.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.scanner.vendor": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.vlan.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.entity_id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "registry.key": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.code_signature.trusted": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.full_name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination.nat": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "package.path": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.args_count": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.state": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_seq_no": {
+      "_seq_no": {
+        "type": "_seq_no",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "endgame.metadata.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.group.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_id": {
+      "_id": {
+        "type": "_id",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.title": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.nat.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.top_level_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.timezone.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.geo.continent_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.hash.sha1": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.tactic.reference": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.address": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "tls.client.certificate_chain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "@version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.nat": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dns.question.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.level.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "process.executable": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.file.path.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.code_signature.subject_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.type.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.executable": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.egress.interface": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "url.password": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "geoip": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.packets": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.content-length.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua-mobile.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.args": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-mode": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.egress.interface.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.type": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "http.request.referrer.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.stack_trace": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "metadata._index": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.hash.sha256": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "ingest.timestamp": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.egress": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.x-chunk-encoding": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "elasticsearch.component.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.uptime": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.geo.country_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.version_protocol": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.outcome.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user.group.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.mtime": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.license": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.x-forwarded-for.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "_version": {
+      "_version": {
+        "type": "_version",
+        "metadata_field": true,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "tls.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.severity": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.content-type.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.x-real-ip": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "agent.id.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "agent.hostname": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "registry.data.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.as.number": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.os.family": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.code_signature.status": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.pe.original_file_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.executable.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-site.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.hash.sha256": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.connection.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "registry.data.bytes": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.question.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_field_names": {
+      "_field_names": {
+        "type": "_field_names",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.origin.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.geo.region_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "process.code_signature.valid": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "endgame.event_subtype_full": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.registered_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.as": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.parent.code_signature": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.os.full": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.ingress.interface.alias": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-version": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "file.code_signature.valid": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "ecs.version.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.os": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.hash.sha512": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.code_signature.trusted": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-dest.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.user.group.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.ingress.vlan.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "rule.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.dataset.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "rule.description": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.technique.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.offset": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "message.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.mime_type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.code_signature.trusted": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.geo.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.ja3s": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.pe.description": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.ip.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.packets": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.full_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.name.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "tls.cipher": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.os.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "http.request.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.sequence": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.file.path.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "dll.hash.sha1": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.os.kernel": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua-mobile": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.user": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "endgame.metadata": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.parent.command_line.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.geo.continent_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.drive_letter": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.os.kernel": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-dest": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "client.user": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.tags": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "container": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.user.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.scanner": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.geo.country_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.name.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.technique": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "user.group.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.content-type": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "http.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.original": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "http.response.status_code": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.thread.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user.group.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.ingress.vlan.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request.referrer.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "event.created.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "process.parent.start": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.egress.vlan.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.risk_score": {
+      "float": {
+        "type": "float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "client.nat.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud.machine": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "agent.id": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "process.parent.code_signature.trusted": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.group": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "destination.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "http.request.body": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "rule.license": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.response.body.content.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination.packets": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.geo.continent_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.product": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.node": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "network.vlan.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.ja3": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.exit_code": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-xsrf": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "vulnerability.classification": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.thread.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.created.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.code_signature.status": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.user.group": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host.user.full_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.connection": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.egress.vlan": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "destination.geo.country_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "organization": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "url.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.path": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.user.group.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.hash.md5": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_feature": {
+      "_feature": {
+        "type": "_feature",
+        "metadata_field": true,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url.original.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "cloud.availability_zone": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.title.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "dll.code_signature.status": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "destination.geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dns.answers.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request.method": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "http.response.body.content": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user.group": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dns.answers.ttl": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "group": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "http.request.body.content.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "package": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "network.packets": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source_geo.longitude": {
+      "half_float": {
+        "type": "half_float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.build_version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-site": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "dns.op_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.hash": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "elasticsearch.node.name": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "client.as": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "event.module.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.original.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "tls.server.not_after": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "elasticsearch.component.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.pe.file_version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.resolved_ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.as.organization": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.pe.original_file_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.hash": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "_index": {
+      "_index": {
+        "type": "_index",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.address.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.hash.sha1": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.ingress.zone": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-version.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "geoip.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_data_stream_timestamp": {
+      "_data_stream_timestamp": {
+        "type": "_data_stream_timestamp",
+        "metadata_field": true,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "network.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.geo.city_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os.family": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.geo.country_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.hash.sha1": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "rule.uuid": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.pe": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "log.syslog": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "source.geo.country_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.issuer": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.mode": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.hash.md5": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.os.full.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination.geo.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.userAgent.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.certificate": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.os.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.hostname": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.address": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.accept-language.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.host.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua-mobile.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "file.pe.company": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.path.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.as": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "cloud.account": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "endgame.data.malware_classification": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.x-forwarded-proto.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tags": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "source.user.group": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.content-length": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "vulnerability.score.environmental": {
+      "float": {
+        "type": "float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.iana_number": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.owner": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.reference": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.gid": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.os.full": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tags.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.egress.interface.alias": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.entity_id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.os.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.score.base": {
+      "float": {
+        "type": "float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.accept.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.geo.country_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.as.organization.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "vulnerability.severity": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.channel": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request.body.content": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.as": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "tls.server.hash.md5": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.as.organization.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.connection.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.user.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "user.effective": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "destination.user": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "user_agent.os.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.origin": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "log.origin": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "service.type.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "file.hash": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.geo.city_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.group.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.level": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "geoip.longitude": {
+      "half_float": {
+        "type": "half_float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.answers.class": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.syslog.severity.code": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.code_signature.valid": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.target_path": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.serial_number": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.geo.region_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.accept-encoding.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.device": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.user.group.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "organization.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.email": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "related.hosts": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "endgame.data.malware_classification.identifier": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.technique.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.subject": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "related": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "event.module": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "user.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.accessed": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source_geo.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "event.ingested.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.userAgent.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "service.name": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "dll": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "event.kind.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source_geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.args": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.as.organization.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "organization.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.as.organization.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.nat": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "url.original": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.expect.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.pe.company": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "rule.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.vlan": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.as.organization": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.mac": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-system-request.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.egress.interface.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "intel.indicator": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.content-type.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "threat.technique.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "log.syslog.facility.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "rule.author": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "elasticsearch": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.as.organization.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.name": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "url.top_level_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.community_id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "intel.indicator.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.userAgent": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "event.outcome": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "registry.path": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "group.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.accept-language.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.geo.country_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.pe.product": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "related.user": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.hash.sha512": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud.provider": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.hash": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host.user.group.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "elasticsearch.component": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.egress.zone": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.type.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "server.geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dll.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.nat.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.category.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "cloud.instance.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.mac": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "group.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-user.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination_geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "network.inner": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.inode": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.egress.vlan.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.registered_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.hash.md5": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "_type": {
+      "_type": {
+        "type": "_type",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.message": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.pgid": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.hostname": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "vulnerability.category": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.duration": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.risk_score_norm": {
+      "float": {
+        "type": "float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.origin.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "log.origin.file.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "endgame.data.quarantine_result": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "@timestamp": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.ephemeral_id": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "container.image": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dll.pe.file_version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "transaction": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "event.module.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.x-real-ip.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "winlog.provider_guid": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.exit_code": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.pid": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.mac": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.ingress.vlan": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.code_signature.subject_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.x-forwarded-for": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "http.response.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.geo.region_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.group": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "agent.version.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "client.as.organization.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.name": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "event.kind": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "destination_geo.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.version": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.nat.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.tactic.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.not_after": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.x-real-ip.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-system-request.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "event.created": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      },
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      }
+    },
+    "file.extension": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.ingested.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.accept.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.size": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.hash.sha256": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.expect.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "trace.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.protocol": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.url": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source_geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.question.registered_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request.referrer": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "client.geo.region_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.args_count": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.code_signature.subject_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.ingress.interface": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.ctime": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.name.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "user_agent.os": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "file.code_signature.exists": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.command_line": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user.group.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "source.user": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "agent.version.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "metadata": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dns.question.subdomain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.name.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.message.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.hash.sha256": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.mac": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.nat.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "container.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.attributes": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.address": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "transaction.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host.user.email": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dll.hash.sha256": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.accept-encoding": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.os.version": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.user.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.address": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.upgrade-insecure-requests.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "client.top_level_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.geo.city_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud.region": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.geo.region_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.title.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "user.effective.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.question.top_level_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-user": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination.geo.city_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url.path": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.port": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.email": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.stack_trace.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination.geo.country_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "service.type.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.hash.md5": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "scan": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "service.node.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.end": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.framework": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.working_directory": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.type": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "event.type.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.accept": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "package.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.install_scope": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.name.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.hash": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "tls.client.hash.md5": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud.account.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.file.path": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.accept-language": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "user_agent.device.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud.instance.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host.os.full": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "related.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.hash": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.computer_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-site.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "_ignored": {
+      "_ignored": {
+        "type": "_ignored",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "log.flags.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.x-chunk-encoding.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "server.user.full_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.os.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.ingress": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.mac": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.thread": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-mode.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.original": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "url.extension": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.geo.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.pe": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.code_signature": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.as.number": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.as.number": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "elasticsearch.node": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.pe.description": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.version": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "host.os.family": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-dest.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-fetch-user.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "destination": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "rule": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.geo.region_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua-platform": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-xsrf.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.outcome.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "network.inner.vlan.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.os.full.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "server.user.email": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.id.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.user.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.timezone": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "tls.resumed": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.task": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "registry": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "source.as.organization.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "user.effective.full_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.as.number": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.as.organization": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.parent.uptime": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.hash.sha1": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.thread": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "dll.path": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.certificate_chain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.technique.reference": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "package.description": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.user.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.type.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "file.pe.description": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "rule.reference": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.syslog.severity": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.parent.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.original.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.x-chunk-encoding.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "url.username": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "ingest": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.vendor": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.name.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "host.geo.continent_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.packets": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.ppid": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.answers": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "host.user.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "log.flags": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "scan.exiftool": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "dns.answers.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "cloud.machine.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination_geo.location": {
+      "geo_point": {
+        "type": "geo_point",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.group.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.start": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.mac": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "dns.question.class": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.enumeration": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "url.registered_domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.geo.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.nat.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.logger": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "geoip.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua-platform.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.geo": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "client.geo.region_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.application": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.flags.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.hash.sha256": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.origin.file": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.uptime": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "agent.type.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.directory": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.group.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.report_id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "elasticsearch.node.name.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.geo.city_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "host.user.domain": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source_geo.latitude": {
+      "half_float": {
+        "type": "half_float",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.action": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.ingested": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      },
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      }
+    },
+    "log.syslog.facility": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.content-length.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.os.platform": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "endgame": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "source.geo.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.description": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.hash.sha1": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.user": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "observer.geo.region_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.full_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.expect": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "observer.ingress.interface.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "event.type.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-xsrf.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "agent.hostname.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "container.name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "agent.ephemeral_id.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "ecs": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.nat.ip": {
+      "ip": {
+        "type": "ip",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.established": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.response": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "event.kind.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.user.full_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.hash.sha512": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.client.not_before": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "client.geo.country_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "source.geo.region_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "threat.tactic.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.curve": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.parent.working_directory.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "_tier": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": true,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "container.runtime": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.type": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "ecs.version": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    },
+    "process.parent.ppid": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.thread.id": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "destination.user.group.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "process.start": {
+      "date": {
+        "type": "date",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.sec-ch-ua-platform.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "server.bytes": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "http.request.method.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-system-request": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "error": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "process.parent.code_signature.exists": {
+      "boolean": {
+        "type": "boolean",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "observer.ingress.interface.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "error.message.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "network": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.x-forwarded-for.keyword": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "trace": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "source.geo.country_iso_code": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "kibana.log.meta.req.headers.host.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "source.user.id": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "network.direction": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "log.syslog.priority": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent": {
+      "object": {
+        "type": "object",
+        "metadata_field": false,
+        "searchable": false,
+        "aggregatable": false
+      }
+    },
+    "server.geo.country_name": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "file.size": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "winlog.event_id": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "organization.name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "kibana.log.meta.req.headers.kbn-version.security": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "client.user.full_name.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "network.transport": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "tls.server.subject": {
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "user_agent.os.full.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "rule.score": {
+      "long": {
+        "type": "long",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true
+      }
+    },
+    "vulnerability.description.text": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false
+      }
+    },
+    "event.dataset": {
+      "text": {
+        "type": "text",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": false,
+        "indices": [
+          "securityonion:so-elasticsearch-2021.10.19",
+          "securityonion:so-elasticsearch-2021.10.20",
+          "securityonion:so-kibana-2021.10.19",
+          "securityonion:so-kibana-2021.10.20"
+        ]
+      },
+      "keyword": {
+        "type": "keyword",
+        "metadata_field": false,
+        "searchable": true,
+        "aggregatable": true,
+        "indices": [
+          "securityonion:endgame-2021.10.19",
+          "securityonion:endgame-2021.10.20"
+        ]
+      }
+    }
+  }
+}
