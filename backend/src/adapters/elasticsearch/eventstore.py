@@ -1,7 +1,8 @@
 """ElasticEventstore — ES-backed implementation of the Eventstore port.
 
 Ports ``server/modules/elastic/elasticeventstore.go`` ``Search`` and
-``Acknowledge`` / ``Update`` (update_by_query fan-out).
+``Acknowledge`` / ``Update`` (update_by_query fan-out), plus
+``elasticqueries.go`` ``getActiveQueries`` / ``cancelQuery`` (tasks API).
 
 Divergence from Go: the Python ``Eventstore`` port (``src/ports/events.py``)
 takes no ``ctx`` argument and performs no ``CheckAuthorized`` — authorization
@@ -9,6 +10,15 @@ happens at the FastAPI route/dependency layer — so the Go ``server.CheckAuthor
 calls and the ``es-security-runas-user`` per-request header are dropped here.
 The acknowledging-user id is supplied to the constructor as ``requestor_id``
 instead of being read from the Go request context.
+
+Divergence from Go (bug fix): Go's ``getActiveQueries`` has a latent bug — it
+lists tasks on the primary client (``store.esClient.Tasks.List``) inside the
+per-client loop instead of the loop variable ``client``, and it checks the
+wrong error variable (``err`` instead of ``clientErr``/``readErr``), so remote
+clients are never actually queried and per-client errors are swallowed. The
+Python port lists tasks on each loop client, attaches the originating client to
+every ``QueryTask`` (see ``tasks.parse_query_tasks``), and cancels on the client
+that owns the task — making ``cancel_query`` correct across multiple clusters.
 
 ``acknowledge`` faithfully reproduces Go's ``updateCriteria.Populate`` step:
 the ack ``search_filter`` is parsed into the update query and ``date_range``
@@ -42,6 +52,7 @@ from src.adapters.elasticsearch.query_builder import (
     build_search_request,
     build_update_request,
 )
+from src.adapters.elasticsearch.tasks import parse_query_tasks
 from src.domain.event import (
     EventAckCriteria,
     EventSearchCriteria,
@@ -55,6 +66,7 @@ from src.domain.query import (
     SearchSegment,
     is_scalar,
 )
+from src.ports.events import QueryTask
 
 
 class ElasticEventstore:
@@ -234,3 +246,33 @@ class ElasticEventstore:
 
         if errors and len(errors) >= len(self._clients.all_clients):
             results.errors.extend(errors)
+
+    async def get_active_queries(self, filter_internal: bool) -> list[QueryTask]:
+        """List active query tasks across all clients (Go ``getActiveQueries``).
+
+        Bug-fixed vs Go: each loop ``client`` is listed (Go listed the primary
+        every iteration) and the originating client is attached to each task.
+        """
+        out: list[QueryTask] = []
+        for client in self._clients.all_clients:
+            resp = await client.tasks.list()
+            out.extend(
+                parse_query_tasks(
+                    dict(resp), client=client, grid_id="",
+                    filter_internal=filter_internal,
+                ),
+            )
+        return out
+
+    async def cancel_query(self, query_id: str) -> None:
+        """Cancel an active query by task id (Go ``cancelQuery``).
+
+        Bug-fixed vs Go: cancels on the client that owns the task rather than
+        always on the primary, so cancellation works across multiple clusters.
+        """
+        for task in await self.get_active_queries(False):
+            if task.task_id == query_id:
+                client = task._client  # type: ignore[attr-defined]
+                await client.tasks.cancel(task_id=query_id)
+                return
+        raise RuntimeError("query not found")
