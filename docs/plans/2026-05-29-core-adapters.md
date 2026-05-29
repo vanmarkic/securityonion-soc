@@ -1387,8 +1387,9 @@ logger = logging.getLogger(__name__)
 
 
 def _map_identity_to_user(identity: dict) -> User:
+    # NOTE: Kratos traits are FLAT (firstName/lastName), matching the Go
+    # reference kratosuser.go json tags — NOT nested under traits.name.
     traits = identity.get("traits", {})
-    name = traits.get("name", {})
     state = identity.get("state", "active")
     credentials = identity.get("credentials", {})
 
@@ -1398,8 +1399,8 @@ def _map_identity_to_user(identity: dict) -> User:
     return User(
         id=identity.get("id", ""),
         email=traits.get("email", ""),
-        first_name=name.get("first", ""),
-        last_name=name.get("last", ""),
+        first_name=traits.get("firstName", ""),
+        last_name=traits.get("lastName", ""),
         note=traits.get("note", ""),
         status="locked" if state == "inactive" else "",
         totp_status=totp_status,
