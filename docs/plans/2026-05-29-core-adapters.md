@@ -705,8 +705,9 @@ Connect StaticKeyAuth and FileDatastore so the server boots and serves real resp
 
 **Files:**
 - Modify: `backend/src/main.py`
-- Modify: `backend/src/shared/middleware.py`
 - Test: `backend/tests/test_wiring.py`
+
+> **Note (implemented):** `src/shared/middleware.py` was intentionally NOT modified. Rather than mutating the shared module-level `get_request_context` global (which would break the dependency-override test isolation that 866+ tests rely on), `create_app` overrides each route module's `get_request_context_dep` via FastAPI `dependency_overrides`. The global `app` is preserved unchanged via a shared `_build_base_app()` helper.
 
 ### Step 1: Write the failing test
 
