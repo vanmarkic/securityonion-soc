@@ -234,6 +234,20 @@ def parse_msearch_results(
 # ---------------------------------------------------------------------------
 
 
+def convert_object_to_document_map(
+    name: str, obj: Any, schema_prefix: str
+) -> dict[str, Any]:
+    """Port of ConvertObjectToDocumentMap (converter.go:1062).
+
+    Wraps a domain object under ``<schema_prefix><name>`` and stamps the
+    current wall-clock time under ``@timestamp`` (Go: ``time.Now()``).
+    """
+    return {
+        schema_prefix + name: obj,
+        "@timestamp": datetime.now(),
+    }
+
+
 def convert_severity(sev: str) -> str:
     """Port of convertSeverity: numeric -> label, else lowercase passthrough."""
     s = sev.lower()
