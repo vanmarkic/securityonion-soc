@@ -5,12 +5,13 @@ Ported from Go server/modules/statickeyauth/statickeyauthimpl.go.
 
 from __future__ import annotations
 
+import hmac
 import ipaddress
 import logging
 
 from fastapi import HTTPException, Request
 
-from src.shared.context import AGENT_ID, RequestContext
+from src.shared.context import RequestContext
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class StaticKeyAuth:
         if not key:
             return False
         pieces = key.split(" ")
-        return pieces[-1] == self.api_key
+        return hmac.compare_digest(pieces[-1], self.api_key)
 
     def validate_authorization(self, key: str, ip_str: str) -> bool:
         if key and not key.startswith("Bearer "):
@@ -46,7 +47,8 @@ class StaticKeyAuth:
         except ValueError:
             return False
 
-        assert self._network is not None
+        if self._network is None:
+            return False
         return addr in self._network
 
     async def __call__(self, request: Request) -> RequestContext:
@@ -56,4 +58,4 @@ class StaticKeyAuth:
         if not self.validate_authorization(key, ip_str):
             raise HTTPException(status_code=401, detail="Access denied")
 
-        return RequestContext(requestor_id=AGENT_ID, username="agent")
+        return RequestContext.agent()

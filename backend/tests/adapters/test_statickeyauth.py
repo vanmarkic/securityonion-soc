@@ -1,8 +1,11 @@
 """Tests for StaticKeyAuth adapter — ported from Go statickeyauthimpl_test.go."""
 
 import pytest
+from fastapi import Depends, FastAPI
+from httpx import ASGITransport, AsyncClient
 
 from src.adapters.statickeyauth.middleware import StaticKeyAuth
+from src.shared.context import AGENT_ID, RequestContext
 
 
 class TestValidateApiKey:
@@ -95,3 +98,42 @@ class TestInit:
     def test_wildcard_accepted(self):
         auth = StaticKeyAuth(api_key="abc", anonymous_cidr="*")
         assert auth._skip_cidr_check is True
+
+
+class TestCall:
+    """Exercises the FastAPI dependency (__call__) — the security boundary."""
+
+    def _make_app(self, auth: StaticKeyAuth) -> FastAPI:
+        app = FastAPI()
+
+        @app.get("/whoami")
+        async def whoami(ctx: RequestContext = Depends(auth)) -> dict[str, str]:
+            return {"requestor_id": ctx.requestor_id}
+
+        return app
+
+    async def test_valid_api_key_succeeds(self):
+        auth = StaticKeyAuth(api_key="abc", anonymous_cidr="172.17.0.0/24")
+        app = self._make_app(auth)
+        transport = ASGITransport(app=app, client=("1.1.1.1", 12345))
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/whoami", headers={"Authorization": "abc"})
+        assert resp.status_code == 200
+        assert resp.json()["requestor_id"] == AGENT_ID
+
+    async def test_wrong_key_outside_cidr_rejected(self):
+        auth = StaticKeyAuth(api_key="abc", anonymous_cidr="172.17.0.0/24")
+        app = self._make_app(auth)
+        transport = ASGITransport(app=app, client=("1.1.1.1", 12345))
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/whoami", headers={"Authorization": "wrong"})
+        assert resp.status_code == 401
+
+    async def test_no_key_wildcard_cidr_succeeds(self):
+        auth = StaticKeyAuth(api_key="abc", anonymous_cidr="*")
+        app = self._make_app(auth)
+        transport = ASGITransport(app=app, client=("1.1.1.1", 12345))
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            resp = await client.get("/whoami")
+        assert resp.status_code == 200
+        assert resp.json()["requestor_id"] == AGENT_ID
