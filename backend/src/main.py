@@ -1,5 +1,13 @@
+from collections.abc import AsyncIterator
+from typing import Any
+
 from fastapi import FastAPI
 
+from src.adapters.elasticsearch.assistantstore import ElasticAssistantstore
+from src.adapters.elasticsearch.casestore import ElasticCasestore
+from src.adapters.elasticsearch.client import ElasticClients, build_async_client
+from src.adapters.elasticsearch.detectionstore import ElasticDetectionstore
+from src.adapters.elasticsearch.eventstore import ElasticEventstore
 from src.adapters.filedatastore.store import FileDatastore
 from src.adapters.kratos.userstore import KratosUserstore
 from src.adapters.statickeyauth.middleware import StaticKeyAuth
@@ -7,6 +15,10 @@ from src.adapters.staticrbac.authorizer import StaticRbacAuthorizer
 from src.adapters.stub.info_provider import StubInfoProvider
 from src.adapters.stub.userstore import StubUserstore
 from src.api import (
+    assistant_routes,
+    case_routes,
+    detection_routes,
+    events_routes,
     info_routes,
     job_routes,
     jobs_routes,
@@ -35,9 +47,19 @@ from src.api.stream_routes import router as stream_router
 from src.api.users_routes import router as users_router
 from src.api.util_routes import router as util_router
 from src.config import AppConfig, load_config
+from src.domain.assistant import (
+    BalanceResponse,
+    HealthResponse,
+    Message,
+    ToolResponse,
+)
 from src.domain.status import Status
 from src.domain.user import User
 from src.ports.users import Userstore
+from src.services.assistant_service import AssistantService
+from src.services.case_service import CaseService
+from src.services.detection_service import DetectionService
+from src.services.events_service import EventsService
 from src.services.grid_service import GridService
 from src.services.info_service import InfoService
 from src.services.job_service import JobService
@@ -129,6 +151,36 @@ class _UnconfiguredAdminUserstore:
         raise NotImplementedError("AdminUserstore not configured")
 
 
+class _UnconfiguredAssistantManager:
+    """AssistantManager placeholder — no AI manager adapter is wired yet.
+
+    The AI manager is a behavioral port (out of scope for the ES storage
+    adapter). Wiring the ES-backed Assistantstore still needs *a* manager to
+    construct AssistantService; persistence-only routes (sessions, history,
+    usage) never touch these methods, while chat/tool/balance/health raise
+    until a real manager adapter lands.
+    """
+
+    async def chat(self, model: str, messages: list[Message]) -> list[Message]:
+        raise NotImplementedError("AssistantManager not configured")
+
+    async def chat_stream(
+        self, model: str, messages: list[Message],
+    ) -> AsyncIterator[dict[str, Any]]:
+        raise NotImplementedError("AssistantManager not configured")
+
+    async def execute_tool(
+        self, tool_name: str, params: str, aux_data: str,
+    ) -> ToolResponse:
+        raise NotImplementedError("AssistantManager not configured")
+
+    async def balance(self, model: str) -> BalanceResponse:
+        raise NotImplementedError("AssistantManager not configured")
+
+    async def health(self, model: str) -> HealthResponse:
+        raise NotImplementedError("AssistantManager not configured")
+
+
 def create_app(config_path: str | None = None) -> FastAPI:
     """Build a fresh FastAPI app with Tier 0 adapters wired in."""
     application = _build_base_app()
@@ -196,5 +248,58 @@ def create_app(config_path: str | None = None) -> FastAPI:
     application.dependency_overrides[users_routes.get_users_service] = (
         lambda: UsersService(userstore, admin_userstore, rbac)
     )
+
+    # Tier 2: Elasticsearch storage adapter. Only wired when an `elastic`
+    # (or `elasticsearch`) module block with a host is configured; otherwise the
+    # events/case/detection/assistant routes stay unwired (Tier-0 default app is
+    # unchanged). One shared ElasticClients (primary + remotes) backs all four
+    # stores so the connection pool isn't fanned out per route.
+    es_cfg = cfg.elasticsearch
+    if es_cfg is not None and es_cfg.host_url:
+        primary = build_async_client(
+            es_cfg.host_url, es_cfg.username, es_cfg.password,
+            verify_cert=es_cfg.verify_cert, timeout_ms=es_cfg.timeout_ms,
+        )
+        remotes = [
+            build_async_client(
+                host, es_cfg.username, es_cfg.password,
+                verify_cert=es_cfg.verify_cert, timeout_ms=es_cfg.timeout_ms,
+            )
+            for host in es_cfg.remote_host_urls
+        ]
+        clients = ElasticClients(primary=primary, remotes=remotes)
+        for client in clients.all_clients:
+            application.router.on_shutdown.append(client.close)
+
+        eventstore = ElasticEventstore(clients, es_cfg)
+        casestore = ElasticCasestore(clients, es_cfg)
+        detectionstore = ElasticDetectionstore(clients, es_cfg)
+        assistantstore = ElasticAssistantstore(clients, es_cfg)
+        assistant_manager = _UnconfiguredAssistantManager()
+
+        application.dependency_overrides[events_routes.get_request_context_dep] = auth
+        application.dependency_overrides[case_routes.get_request_context_dep] = auth
+        application.dependency_overrides[detection_routes.get_request_context_dep] = (
+            auth
+        )
+        application.dependency_overrides[assistant_routes.get_request_context_dep] = (
+            auth
+        )
+
+        application.dependency_overrides[events_routes.get_events_service] = (
+            lambda: EventsService(eventstore)
+        )
+        application.dependency_overrides[case_routes.get_case_service] = (
+            lambda: CaseService(casestore)
+        )
+        # Detection/assistant stores are ES-backed; their AI collaborators
+        # (engines, manager) are behavioral ports out of scope here — pass empty
+        # engines + the existing RBAC authorizer, and a not-configured manager.
+        application.dependency_overrides[detection_routes.get_detection_service] = (
+            lambda: DetectionService(detectionstore, {}, rbac)
+        )
+        application.dependency_overrides[assistant_routes.get_assistant_service] = (
+            lambda: AssistantService(assistantstore, assistant_manager)
+        )
 
     return application

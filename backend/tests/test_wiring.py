@@ -204,3 +204,157 @@ class TestKratosWiring:
         assert info_svc._userstore is users_svc._userstore
         assert isinstance(info_svc._userstore, KratosUserstore)
         await info_svc._userstore.close()
+
+
+def _es_config(tmp_path: Path) -> str:
+    config = {
+        "server": {
+            "modules": {
+                "statickeyauth": {"apiKey": "k", "anonymousCidr": "*"},
+                "filedatastore": {"jobDir": str(tmp_path / "jobs")},
+                "elastic": {"hostUrl": "http://localhost:9200", "index": "*:so-*"},
+            }
+        }
+    }
+    path = tmp_path / "sensoroni.json"
+    path.write_text(json.dumps(config))
+    return str(path)
+
+
+class TestElasticsearchWiring:
+    """ES store wiring — no live ES required.
+
+    These tests inspect the installed dependency-override factories and the
+    adapter types they build; they never make a network call. Each factory is
+    invoked once to construct the store; the underlying AsyncElasticsearch
+    clients are closed afterwards so no connector is leaked.
+    """
+
+    async def test_create_app_wires_eventstore(self, tmp_path: Path):
+        from src.adapters.elasticsearch.eventstore import ElasticEventstore
+        from src.api import events_routes
+        from src.main import create_app
+
+        app = create_app(_es_config(tmp_path))
+
+        assert events_routes.get_events_service in app.dependency_overrides
+        svc = app.dependency_overrides[events_routes.get_events_service]()
+        assert isinstance(svc._store, ElasticEventstore)
+
+    async def test_create_app_wires_casestore(self, tmp_path: Path):
+        from src.adapters.elasticsearch.casestore import ElasticCasestore
+        from src.api import case_routes
+        from src.main import create_app
+
+        app = create_app(_es_config(tmp_path))
+
+        assert case_routes.get_case_service in app.dependency_overrides
+        svc = app.dependency_overrides[case_routes.get_case_service]()
+        assert isinstance(svc._store, ElasticCasestore)
+
+    async def test_create_app_wires_detectionstore(self, tmp_path: Path):
+        from src.adapters.elasticsearch.detectionstore import ElasticDetectionstore
+        from src.api import detection_routes
+        from src.main import create_app
+
+        app = create_app(_es_config(tmp_path))
+
+        assert detection_routes.get_detection_service in app.dependency_overrides
+        svc = app.dependency_overrides[detection_routes.get_detection_service]()
+        assert isinstance(svc._store, ElasticDetectionstore)
+
+    async def test_create_app_wires_assistantstore(self, tmp_path: Path):
+        from src.adapters.elasticsearch.assistantstore import ElasticAssistantstore
+        from src.api import assistant_routes
+        from src.main import create_app
+
+        app = create_app(_es_config(tmp_path))
+
+        assert assistant_routes.get_assistant_service in app.dependency_overrides
+        svc = app.dependency_overrides[assistant_routes.get_assistant_service]()
+        assert isinstance(svc._store, ElasticAssistantstore)
+
+    async def test_es_routes_share_one_client_set(self, tmp_path: Path):
+        """All four ES stores reuse the same ElasticClients (no pool fan-out)."""
+        from src.api import (
+            assistant_routes,
+            case_routes,
+            detection_routes,
+            events_routes,
+        )
+        from src.main import create_app
+
+        app = create_app(_es_config(tmp_path))
+
+        ev = app.dependency_overrides[events_routes.get_events_service]()
+        ca = app.dependency_overrides[case_routes.get_case_service]()
+        de = app.dependency_overrides[detection_routes.get_detection_service]()
+        asst = app.dependency_overrides[assistant_routes.get_assistant_service]()
+        assert ev._store._clients is ca._store._clients
+        assert ca._store._clients is de._store._clients
+        assert de._store._clients is asst._store._clients
+
+    async def test_es_routes_get_auth_request_context(self, tmp_path: Path):
+        from src.api import (
+            assistant_routes,
+            case_routes,
+            detection_routes,
+            events_routes,
+            info_routes,
+        )
+        from src.main import create_app
+
+        app = create_app(_es_config(tmp_path))
+
+        auth = app.dependency_overrides[info_routes.get_request_context_dep]
+        assert app.dependency_overrides[events_routes.get_request_context_dep] is auth
+        assert app.dependency_overrides[case_routes.get_request_context_dep] is auth
+        assert (
+            app.dependency_overrides[detection_routes.get_request_context_dep] is auth
+        )
+        assert (
+            app.dependency_overrides[assistant_routes.get_request_context_dep] is auth
+        )
+
+    async def test_module_level_app_stays_override_free(self, tmp_path: Path):
+        """create_app must never mutate the shared module-level app."""
+        from src.main import app, create_app
+
+        create_app(_es_config(tmp_path))
+        assert app.dependency_overrides == {}
+
+    async def test_no_elastic_config_leaves_es_routes_unwired(self, tmp_path: Path):
+        """Without an elastic block the ES routes stay un-overridden (Tier-0 only)."""
+        from src.api import (
+            assistant_routes,
+            case_routes,
+            detection_routes,
+            events_routes,
+        )
+        from src.main import create_app
+
+        config = {
+            "server": {
+                "modules": {
+                    "statickeyauth": {"apiKey": "k", "anonymousCidr": "*"},
+                    "filedatastore": {"jobDir": str(tmp_path / "jobs")},
+                }
+            }
+        }
+        path = tmp_path / "sensoroni.json"
+        path.write_text(json.dumps(config))
+
+        app = create_app(str(path))
+        assert events_routes.get_events_service not in app.dependency_overrides
+        assert case_routes.get_case_service not in app.dependency_overrides
+        assert detection_routes.get_detection_service not in app.dependency_overrides
+        assert assistant_routes.get_assistant_service not in app.dependency_overrides
+
+    async def test_default_create_app_unchanged(self):
+        from src.main import create_app
+
+        app = create_app()
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as c:
+            resp = await c.get("/api/health")
+            assert resp.status_code == 200
