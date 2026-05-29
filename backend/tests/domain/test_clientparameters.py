@@ -1,6 +1,5 @@
 """Tests for ClientParameters domain models — ported from Go model/clientparameters_test.go."""
 
-import json
 
 from src.domain.clientparameters import (
     DEFAULT_CHART_LABEL_FIELD_SEPARATOR,
@@ -193,7 +192,7 @@ class TestModelParametersUnmarshalJSON:
         }
         try:
             ModelParameters.from_json(data)
-            assert False, "Expected ValueError"
+            raise AssertionError("Expected ValueError")
         except ValueError:
             pass
 
@@ -219,7 +218,7 @@ class TestModelParametersUnmarshalJSON:
         }
         try:
             ModelParameters.from_json(data)
-            assert False, "Expected ValueError"
+            raise AssertionError("Expected ValueError")
         except ValueError:
             pass
 

@@ -1,6 +1,5 @@
 """Tests for grid routes — ported from Go server/gridhandler_test.go."""
 
-import pytest
 from httpx import ASGITransport, AsyncClient
 
 from src.api.grid_routes import get_grid_service
@@ -31,6 +30,7 @@ class FakeStatusstore:
 
 def _make_app(datastore: FakeDatastore, statusstore: FakeStatusstore):
     from fastapi import FastAPI
+
     from src.api.grid_routes import router
 
     test_app = FastAPI()

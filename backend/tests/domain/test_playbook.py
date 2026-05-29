@@ -1,7 +1,6 @@
 """Tests for Playbook domain models — ported from Go model/playbook_test.go."""
 
-import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import yaml
 
@@ -47,7 +46,7 @@ class TestPlaybookJSONSerialization:
             name="JSON Test Playbook",
             description="Testing JSON serialization",
             id="json-test-id",
-            source_created=datetime(2024, 1, 15, 10, 0, 0, tzinfo=timezone.utc),
+            source_created=datetime(2024, 1, 15, 10, 0, 0, tzinfo=UTC),
             detection_id="json-detection-123",
             detection_category="network_connection",
             detection_type="nids",
@@ -90,7 +89,7 @@ class TestPlaybookYAMLSerialization:
             name="YAML Test Playbook",
             description="Testing YAML serialization",
             id="yaml-test-id",
-            source_created=datetime(2024, 1, 15, 10, 0, 0, tzinfo=timezone.utc),
+            source_created=datetime(2024, 1, 15, 10, 0, 0, tzinfo=UTC),
             detection_id="yaml-detection-123",
             detection_category="file_event",
             detection_type="sigma",
@@ -305,8 +304,8 @@ class TestPlaybookWithSourceTimestamps:
     """Ported from TestPlaybookWithSourceTimestamps."""
 
     def test_created_and_modified(self):
-        created = datetime(2024, 1, 15, 10, 0, 0, tzinfo=timezone.utc)
-        modified = datetime(2024, 1, 16, 15, 30, 0, tzinfo=timezone.utc)
+        created = datetime(2024, 1, 15, 10, 0, 0, tzinfo=UTC)
+        modified = datetime(2024, 1, 16, 15, 30, 0, tzinfo=UTC)
 
         playbook = Playbook(
             source_created=created,
@@ -325,7 +324,7 @@ class TestPlaybookWithoutSourceUpdated:
 
     def test_nil_source_updated(self):
         playbook = Playbook(
-            source_created=datetime(2024, 1, 15, 10, 0, 0, tzinfo=timezone.utc),
+            source_created=datetime(2024, 1, 15, 10, 0, 0, tzinfo=UTC),
             source_updated=None,
             id="no-update-test",
         )

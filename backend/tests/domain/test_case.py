@@ -1,12 +1,8 @@
 """Tests for Case domain models — ported from Go model/case_test.go."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from src.domain.case import (
-    Artifact,
-    ArtifactStream,
-    Case,
-    RelatedEvent,
     new_artifact,
     new_artifact_stream,
     new_case,
@@ -79,7 +75,7 @@ class TestProcessWorkflowForStatus:
         assert new.complete_time >= start
 
     def test_preserves_start_time_from_old_case(self):
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         old_case = new_case()
         old_case.status = "new"
         old_case.start_time = now
@@ -91,7 +87,7 @@ class TestProcessWorkflowForStatus:
         assert new.start_time == now
 
     def test_complete_time_updates_on_reclose(self):
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         old_case = new_case()
         old_case.status = "in progress"
         old_case.complete_time = now

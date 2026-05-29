@@ -5,7 +5,6 @@ from src.domain.gridmember import (
     GRID_MEMBER_DENIED,
     GRID_MEMBER_REJECTED,
     GRID_MEMBER_UNACCEPTED,
-    GridMember,
     new_grid_member,
 )
 

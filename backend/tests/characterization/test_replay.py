@@ -10,7 +10,6 @@ Run the capture script first:
         --auth-token <token>
 """
 import json
-from pathlib import Path
 
 import pytest
 

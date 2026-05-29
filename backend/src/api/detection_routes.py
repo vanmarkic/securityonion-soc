@@ -83,9 +83,9 @@ async def get_detection(
     try:
         det = await service.get_detection(detection_id)
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return det.model_dump(by_alias=True)
 
 
@@ -103,9 +103,9 @@ async def get_detection_by_public_id(
     try:
         det = await service.get_detection_by_public_id(public_id)
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return det.model_dump(by_alias=True)
 
 
@@ -128,17 +128,17 @@ async def create_detection(
             author_name=ctx.username,
         )
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except MissingPublicId:
-        raise HTTPException(status_code=400, detail="missingPublicIdErr")
+        raise HTTPException(status_code=400, detail="missingPublicIdErr") from None
     except PublicIdConflict:
-        raise HTTPException(status_code=409, detail="publicIdConflictErr")
+        raise HTTPException(status_code=409, detail="publicIdConflictErr") from None
     except SyncBlocked:
-        raise HTTPException(status_code=423)
+        raise HTTPException(status_code=423) from None
     except SyncError:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
     response.status_code = status
     return det.model_dump(by_alias=True)
@@ -161,19 +161,19 @@ async def update_detection(
             detection, user_id=ctx.requestor_id
         )
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except MissingPublicId:
-        raise HTTPException(status_code=400, detail="missingPublicIdErr")
+        raise HTTPException(status_code=400, detail="missingPublicIdErr") from None
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except PublicIdConflict:
-        raise HTTPException(status_code=409)
+        raise HTTPException(status_code=409) from None
     except SyncBlocked:
-        raise HTTPException(status_code=423)
+        raise HTTPException(status_code=423) from None
     except SyncError:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
     response.status_code = status
     return det.model_dump(by_alias=True)
@@ -195,11 +195,11 @@ async def update_override_note(
     try:
         await service.update_override_note(detection_id, override_index, body.note)
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -216,15 +216,15 @@ async def delete_detection(
     try:
         err_map = await service.delete_detection(detection_id, user_id=ctx.requestor_id)
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except CommunityDeleteError:
-        raise HTTPException(status_code=400, detail="ERROR_DELETE_COMMUNITY")
+        raise HTTPException(status_code=400, detail="ERROR_DELETE_COMMUNITY") from None
     except Unauthorized:
-        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED")
+        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED") from None
     except SyncBlocked:
-        raise HTTPException(status_code=423)
+        raise HTTPException(status_code=423) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return err_map
 
 
@@ -242,9 +242,9 @@ async def duplicate_detection(
     try:
         det = await service.duplicate_detection(detection_id)
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return det.model_dump(by_alias=True)
 
 
@@ -263,7 +263,7 @@ async def create_comment(
     try:
         c = await service.create_comment(detection_id, comment)
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return c.model_dump(by_alias=True)
 
 
@@ -281,7 +281,7 @@ async def get_comment(
     try:
         c = await service.get_comment(comment_id)
     except Exception:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     return c.model_dump(by_alias=True)
 
 
@@ -300,9 +300,9 @@ async def update_comment(
     try:
         c = await service.update_comment(comment_id, comment)
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return c.model_dump(by_alias=True)
 
 
@@ -320,9 +320,9 @@ async def delete_comment(
     try:
         await service.delete_comment(comment_id)
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -339,9 +339,9 @@ async def get_detection_comments(
     try:
         comments = await service.get_comments(detection_id)
     except ObjectNotFound:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return [c.model_dump(by_alias=True) for c in comments]
 
 
@@ -359,7 +359,7 @@ async def get_detection_history(
     try:
         history = await service.get_detection_history(detection_id)
     except Exception:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404) from None
     return history
 
 
@@ -377,9 +377,9 @@ async def convert_content(
     try:
         query = await service.convert_content(detection)
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return ConvertContentResponse(query=query)
 
 
@@ -400,13 +400,13 @@ async def bulk_update(
             new_status, body.ids, body.query, user_id=ctx.requestor_id
         )
     except Unauthorized:
-        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED")
+        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED") from None
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except BulkCommunityError:
-        raise HTTPException(status_code=400, detail="ERROR_BULK_COMMUNITY")
+        raise HTTPException(status_code=400, detail="ERROR_BULK_COMMUNITY") from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return BulkResponse(count=count)
 
 
@@ -425,11 +425,11 @@ async def sync_engine(
     try:
         await service.sync_engine(engine, sync_type, user_id=ctx.requestor_id)
     except Unauthorized:
-        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED")
+        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED") from None
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -446,9 +446,9 @@ async def gen_public_id(
     try:
         pid = await service.gen_public_id(engine)
     except InvalidRequest as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except NotImplementedError:
-        raise HTTPException(status_code=501)
+        raise HTTPException(status_code=501) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return GenPublicIdResponse(publicId=pid)

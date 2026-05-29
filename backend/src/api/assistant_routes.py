@@ -6,8 +6,8 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, Response
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
+from fastapi.responses import StreamingResponse
 
 from src.domain.assistant import IncomingMessage, ToolRequest, UpdateSessionRequest
 from src.services.assistant_service import AssistantService
@@ -68,8 +68,8 @@ async def post_chat(
     except Exception as e:
         err_msg = str(e)
         if err_msg == "ERROR_ASSISTANT_REQUEST_TOO_LARGE":
-            raise HTTPException(status_code=400, detail=err_msg)
-        raise HTTPException(status_code=500, detail="ERROR_UPSTREAM_SERVICE_ERROR")
+            raise HTTPException(status_code=400, detail=err_msg) from None
+        raise HTTPException(status_code=500, detail="ERROR_UPSTREAM_SERVICE_ERROR") from None
     return result
 
 
@@ -93,8 +93,8 @@ async def post_tool(
     except Exception as e:
         err_msg = str(e)
         if err_msg == "ERROR_ASSISTANT_REQUEST_TOO_LARGE":
-            raise HTTPException(status_code=400, detail=err_msg)
-        raise HTTPException(status_code=500, detail="ERROR_UPSTREAM_SERVICE_ERROR")
+            raise HTTPException(status_code=400, detail=err_msg) from None
+        raise HTTPException(status_code=500, detail="ERROR_UPSTREAM_SERVICE_ERROR") from None
 
     if streaming:
         return StreamingResponse(result, media_type="text/event-stream")
@@ -115,7 +115,7 @@ async def get_balance(
     try:
         result = await service.get_balance(model_and_adapter)
     except Exception:
-        raise HTTPException(status_code=500, detail="ERROR_UPSTREAM_SERVICE_ERROR")
+        raise HTTPException(status_code=500, detail="ERROR_UPSTREAM_SERVICE_ERROR") from None
 
     if result is None:
         raise HTTPException(status_code=500)
@@ -132,7 +132,7 @@ async def get_sessions(
     try:
         return await service.get_sessions(ctx.requestor_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 # -- GET /assistant/sessions/{sessionId} --
@@ -149,7 +149,7 @@ async def get_session_details(
     try:
         return await service.get_session_details(sessionId)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 # -- PUT /assistant/sessions/{sessionId} --
@@ -167,7 +167,7 @@ async def update_session(
     try:
         status, error = await service.update_session(sessionId, update_req)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     if error is not None:
         if status == 404:
@@ -193,7 +193,7 @@ async def delete_session(
     try:
         await service.delete_session(sessionId)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     return Response(status_code=204)
 
@@ -215,7 +215,7 @@ async def get_usage(
     try:
         return await service.get_usage(start, end)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 # -- GET /assistant/admin/sessions --
@@ -235,7 +235,7 @@ async def get_all_sessions(
     try:
         return await service.get_all_sessions(start, end)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 # -- GET /assistant/admin/{userId}/sessions --
@@ -256,7 +256,7 @@ async def get_user_sessions(
     try:
         return await service.get_all_sessions(start, end, user_id=userId)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 # -- GET /assistant/admin/{userId}/sessions/{sessionId}/history --
@@ -271,7 +271,7 @@ async def get_session_history_admin(
     try:
         history, status, error = await service.get_session_history_admin(userId, sessionId)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     if error is not None:
         raise HTTPException(status_code=status, detail=error)
@@ -302,4 +302,4 @@ def _parse_date_range(
         end = datetime.strptime(parts[1].strip(), fmt)
         return start, end
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"invalid date range: {e}")
+        raise HTTPException(status_code=400, detail=f"invalid date range: {e}") from None

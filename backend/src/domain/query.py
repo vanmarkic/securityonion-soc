@@ -202,10 +202,6 @@ def _new_group_by_segment(terms: list[QueryTerm]) -> tuple[GroupBySegment | None
 class SortBySegment(BaseSegment):
     _kind = SEGMENT_KIND_SORT_BY
 
-    @classmethod
-    def empty(cls) -> SortBySegment:
-        return cls([])
-
     def __init__(self, terms: list[QueryTerm] | None = None) -> None:
         if terms is not None and len(terms) == 0:
             raise ValueError("ERROR_QUERY_INVALID__SORTBY_TERMS_MISSING")

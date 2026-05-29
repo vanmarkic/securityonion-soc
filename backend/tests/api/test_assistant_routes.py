@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import json
+from collections.abc import AsyncIterator
 from datetime import datetime
-from typing import Any, AsyncIterator
 
 import pytest
 from fastapi import FastAPI
@@ -13,6 +12,8 @@ from httpx import ASGITransport, AsyncClient
 from src.api.assistant_routes import (
     get_assistant_service,
     get_request_context_dep,
+)
+from src.api.assistant_routes import (
     router as assistant_router,
 )
 from src.domain.assistant import (
@@ -24,13 +25,10 @@ from src.domain.assistant import (
     Message,
     StoredMessage,
     ToolResponse,
-    ToolResult,
-    ToolResultContent,
     UserUsage,
 )
 from src.services.assistant_service import AssistantService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Fake Assistantstore

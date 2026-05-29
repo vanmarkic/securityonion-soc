@@ -1,6 +1,6 @@
 """Tests for Job domain model — ported from Go model/job_test.go."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from src.domain.job import (
     DEFAULT_JOB_KIND,
@@ -8,7 +8,6 @@ from src.domain.job import (
     JOB_STATUS_DELETED,
     JOB_STATUS_INCOMPLETE,
     JOB_STATUS_PENDING,
-    Job,
     new_job,
 )
 
@@ -149,5 +148,5 @@ class TestIsEligibleForRetry:
         job = new_job()
         job.fail("test failure")
         # Push fail_time back 1500ms
-        job.fail_time = datetime.now(timezone.utc) - timedelta(milliseconds=1500)
+        job.fail_time = datetime.now(UTC) - timedelta(milliseconds=1500)
         assert job.is_eligible_for_retry(retry_interval_ms=1000, retry_max_attempts=3) is True

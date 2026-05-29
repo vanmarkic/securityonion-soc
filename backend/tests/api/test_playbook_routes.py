@@ -12,6 +12,8 @@ from src.api.playbook_routes import (
     get_authorizer,
     get_playbook_service,
     get_request_context_dep,
+)
+from src.api.playbook_routes import (
     router as playbook_router,
 )
 from src.domain.detection import Detection
@@ -19,7 +21,6 @@ from src.domain.playbook import Playbook
 from src.ports.auth import Unauthorized
 from src.services.playbook_service import PlaybookService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Fake Playbookstore

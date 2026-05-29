@@ -6,7 +6,7 @@ import logging
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import PlainTextResponse
 
 from src.services.query_service import QueryNotFoundError, QueryService
 from src.shared.context import RequestContext
@@ -48,7 +48,7 @@ async def get_active_queries(
     try:
         results = await service.get_active_queries(filter_internal)
     except Exception:
-        raise HTTPException(status_code=400, detail="The request could not be processed.")
+        raise HTTPException(status_code=400, detail="The request could not be processed.") from None
     return [r.to_dict() for r in results]
 
 

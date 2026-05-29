@@ -12,12 +12,13 @@ from httpx import ASGITransport, AsyncClient
 from src.api.jobs_routes import (
     get_job_service,
     get_request_context_dep,
+)
+from src.api.jobs_routes import (
     router as jobs_router,
 )
 from src.domain.job import Job
 from src.services.job_service import JobService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Fake JobDatastore — stub for testing

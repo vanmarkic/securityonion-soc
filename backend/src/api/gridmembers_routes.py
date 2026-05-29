@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 from src.ports.auth import Unauthorized
 from src.services.gridmembers_service import GridMembersService
@@ -52,9 +52,9 @@ async def post_import(
     try:
         await service.check_import_auth(ctx.requestor_id, node_id)
     except Unauthorized:
-        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED")
+        raise HTTPException(status_code=403, detail="ERROR_PERMISSION_DENIED") from None
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from None
 
     # File validation would go here in production
     return {"status": "accepted"}
@@ -70,4 +70,4 @@ async def post_manage_member(
     try:
         await service.manage_member(operation, member_id)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from None

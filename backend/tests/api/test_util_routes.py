@@ -1,6 +1,5 @@
 """Tests for util routes — ported from Go server/utilhandler_test.go."""
 
-import pytest
 from httpx import ASGITransport, AsyncClient
 
 from src.api.util_routes import get_util_service
@@ -56,6 +55,7 @@ class FakeReverseLookupProvider:
 
 def _make_app(provider: FakeReverseLookupProvider | None = None, enable_dns: bool = False):
     from fastapi import FastAPI
+
     from src.api.util_routes import router
 
     test_app = FastAPI()

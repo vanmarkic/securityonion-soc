@@ -5,7 +5,6 @@ from pathlib import Path
 
 from src.domain.info import Info, LicenseKey
 
-
 GOLDEN_MASTER = Path(__file__).parent.parent / "characterization" / "golden_masters" / "get_api_info.json"
 
 

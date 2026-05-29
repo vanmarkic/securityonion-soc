@@ -1,6 +1,6 @@
 """Tests for Analyzer domain model — ported from Go model/analyzer_test.go."""
 
-from src.domain.analyzer import Analyzer, new_analyzer
+from src.domain.analyzer import new_analyzer
 
 
 class TestGetModule:

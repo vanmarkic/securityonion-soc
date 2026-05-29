@@ -47,7 +47,7 @@ async def get_clients(
     try:
         clients = await service.get_clients()
     except Exception:
-        raise HTTPException(status_code=400)
+        raise HTTPException(status_code=400) from None
     return [c.model_dump(by_alias=True) for c in clients]
 
 
@@ -65,9 +65,9 @@ async def create_client(
     try:
         result = await service.create_client(client_obj)
     except ValidationError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return result.model_dump(by_alias=True)
 
 
@@ -87,9 +87,9 @@ async def add_permission(
     try:
         await service.add_permission(client_id, resource, privilege)
     except (InvalidClientId, InvalidPermission) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -107,9 +107,9 @@ async def update_client(
     try:
         result = await service.update_client(client_id, client_obj)
     except (InvalidClientId, ValidationError) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return result.model_dump(by_alias=True)
 
 
@@ -127,9 +127,9 @@ async def generate_secret(
     try:
         result = await service.generate_secret(client_id)
     except InvalidClientId as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return result.model_dump(by_alias=True)
 
 
@@ -147,9 +147,9 @@ async def delete_client(
     try:
         await service.delete_client(client_id)
     except InvalidClientId as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -168,6 +168,6 @@ async def delete_permission(
     try:
         await service.delete_permission(client_id, resource, privilege)
     except (InvalidClientId, InvalidPermission) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None

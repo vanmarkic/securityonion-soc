@@ -8,11 +8,10 @@ from unittest.mock import AsyncMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from src.api.roles_routes import get_request_context_dep, get_roles_service
 from src.main import app
-from src.api.roles_routes import get_roles_service, get_request_context_dep
 from src.services.roles_service import RolesService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Helpers

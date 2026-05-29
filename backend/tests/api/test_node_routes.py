@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
@@ -11,13 +9,14 @@ from httpx import ASGITransport, AsyncClient
 from src.api.node_routes import (
     get_node_service,
     get_request_context_dep,
+)
+from src.api.node_routes import (
     router as node_router,
 )
 from src.domain.job import Job
 from src.domain.node import Node
 from src.services.node_service import NodeService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Fake NodeDatastore — stub for testing

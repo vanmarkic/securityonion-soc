@@ -11,11 +11,12 @@ from httpx import ASGITransport, AsyncClient
 from src.api.packet_routes import (
     get_packet_service,
     get_request_context_dep,
+)
+from src.api.packet_routes import (
     router as packet_router,
 )
 from src.services.packet_service import PacketService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Fake PacketDatastore — stub for testing

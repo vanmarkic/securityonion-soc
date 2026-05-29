@@ -1,6 +1,5 @@
 """Tests for Query DSL parser — ported from Go model/query_test.go."""
 
-import pytest
 
 from src.domain.query import (
     FILTER_DRILLDOWN,
@@ -14,7 +13,6 @@ from src.domain.query import (
     SearchSegment,
     is_scalar,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helper: validate_query

@@ -6,13 +6,12 @@ from pathlib import Path
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from src.domain.info import Info, LicenseKey
+from src.api.info_routes import get_info_service, get_request_context_dep
+from src.domain.info import LicenseKey
 from src.domain.user import User
 from src.main import app
 from src.services.info_service import InfoService
 from src.shared.context import RequestContext
-from src.api.info_routes import get_info_service, get_request_context_dep
-
 
 GOLDEN_MASTER = Path(__file__).parent.parent / "characterization" / "golden_masters" / "get_api_info.json"
 

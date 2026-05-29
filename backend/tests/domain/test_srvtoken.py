@@ -1,10 +1,8 @@
 """Tests for SrvToken domain model — ported from Go model/srvtoken_test.go."""
 
 import base64
-import json
 
 from src.domain.srvtoken import (
-    SrvToken,
     generate_srv_token,
     new_srv_token,
     validate_srv_token,

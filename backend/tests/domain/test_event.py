@@ -1,13 +1,8 @@
 """Tests for Event domain models — ported from Go model/event_test.go."""
 
 import time as time_mod
-from datetime import datetime, timezone
 
 from src.domain.event import (
-    EventSearchCriteria,
-    EventSearchResults,
-    EventUpdateCriteria,
-    EventUpdateResults,
     new_event_search_criteria,
     new_event_search_results,
     new_event_update_criteria,
@@ -38,7 +33,7 @@ class TestPopulate:
 
     def test_bad_start_and_end_times(self):
         bad_time = "2006-05-07"
-        good_time = "2006-05-07T14:15:59+01:00"
+        _good_time = "2006-05-07T14:15:59+01:00"
         zone = "America/New_York"
         criteria = new_event_search_criteria()
         err = criteria.populate("foo", bad_time + " - " + bad_time, "%Y-%m-%dT%H:%M:%S%z", zone, "10", "100")

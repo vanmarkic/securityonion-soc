@@ -8,7 +8,6 @@ from __future__ import annotations
 import re
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
-from fastapi.responses import Response as FastAPIResponse
 
 from src.services.stream_service import StreamService
 
@@ -44,7 +43,7 @@ async def get_stream(
     try:
         parsed_id = int(raw_id)
     except (ValueError, TypeError):
-        raise HTTPException(status_code=400, detail="Invalid job ID")
+        raise HTTPException(status_code=400, detail="Invalid job ID") from None
 
     content, filename, length, mime_type = await service.get_job_stream(parsed_id, unwrap)
 
@@ -89,7 +88,7 @@ async def post_stream(
     try:
         parsed_id = int(raw_id)
     except (ValueError, TypeError):
-        raise HTTPException(status_code=400, detail="Invalid job ID")
+        raise HTTPException(status_code=400, detail="Invalid job ID") from None
 
     body = await request.body()
 
@@ -97,9 +96,9 @@ async def post_stream(
         await service.save_job_stream(parsed_id, body)
     except ValueError as exc:
         if "not found" in str(exc).lower():
-            raise HTTPException(status_code=404, detail=str(exc))
-        raise HTTPException(status_code=500, detail=str(exc))
+            raise HTTPException(status_code=404, detail=str(exc)) from None
+        raise HTTPException(status_code=500, detail=str(exc)) from None
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise HTTPException(status_code=500, detail=str(exc)) from None
 
     return Response(status_code=200)

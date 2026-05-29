@@ -5,26 +5,24 @@ from __future__ import annotations
 import json
 import logging
 import uuid
+from collections.abc import AsyncIterator
 from datetime import datetime
-from typing import Any, AsyncIterator
+from typing import Any
 
 from src.domain.assistant import (
+    MESSAGE_TAG_CONTEXT_COMPRESSION,
     AssistantSession,
     AssistantSessionDetails,
-    BalanceResponse,
     ContentBlock,
     GetSessionsQuery,
-    HealthResponse,
     IncomingMessage,
     Message,
-    MESSAGE_TAG_CONTEXT_COMPRESSION,
     StoredMessage,
     ToolRequest,
     ToolResponse,
     ToolResult,
     ToolResultContent,
     UpdateSessionRequest,
-    UserUsage,
 )
 from src.ports.assistant import AssistantManager, Assistantstore
 

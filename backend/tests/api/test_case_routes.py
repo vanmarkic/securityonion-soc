@@ -11,6 +11,8 @@ from httpx import ASGITransport, AsyncClient
 from src.api.case_routes import (
     get_case_service,
     get_request_context_dep,
+)
+from src.api.case_routes import (
     router as case_router,
 )
 from src.domain.case import (
@@ -22,7 +24,6 @@ from src.domain.case import (
 )
 from src.services.case_service import CaseService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Fake Casestore — stub for testing

@@ -6,7 +6,7 @@ import logging
 
 from src.domain.config import is_valid_minion_id
 from src.domain.gridmember import GridMember
-from src.ports.auth import Authorizer, Unauthorized
+from src.ports.auth import Authorizer
 from src.ports.gridmembers import GridMembersstore
 
 logger = logging.getLogger(__name__)

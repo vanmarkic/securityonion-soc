@@ -6,13 +6,14 @@ the same test-case structure (table-driven tests -> parametrize).
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from src.api.detection_routes import get_detection_service, get_request_context_dep
 from src.domain.detection import (
     Detection,
     DetectionComment,
@@ -27,9 +28,7 @@ from src.services.detection_service import (
     DetectionService,
     ObjectNotFound,
 )
-from src.api.detection_routes import get_detection_service, get_request_context_dep
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -519,7 +518,7 @@ class TestUpdateDetection:
     """Ported from TestHandlerUpdateDetection."""
 
     async def test_sunny_day(self, client, mock_store, mock_engine, mock_authorizer):
-        now = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 1, tzinfo=UTC)
         orig = Detection(
             create_time=now,
             author="First Last",
@@ -1481,7 +1480,7 @@ class TestPrepareForSave:
 
     async def test_simple_sunny_day(self, mock_store, mock_engine):
         """Public ID lookup finds same detection -> uses it as old."""
-        now = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 1, tzinfo=UTC)
         mock_store.get_detection_by_public_id = AsyncMock(
             return_value=Detection(id="12345", create_time=now)
         )
@@ -1502,7 +1501,7 @@ class TestPrepareForSave:
 
     async def test_no_duplicate(self, mock_store, mock_engine):
         """Public ID not found -> falls back to GetDetection by id."""
-        now = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 1, tzinfo=UTC)
         mock_store.get_detection_by_public_id = AsyncMock(return_value=None)
         mock_store.get_detection = AsyncMock(
             return_value=Detection(id="12345", create_time=now)
@@ -1522,7 +1521,7 @@ class TestPrepareForSave:
         """Public ID found with different internal ID -> PublicIdConflict."""
         from src.services.detection_service import PublicIdConflict
 
-        now = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 1, tzinfo=UTC)
         mock_store.get_detection_by_public_id = AsyncMock(
             return_value=Detection(id="23456", create_time=now)
         )
@@ -1559,7 +1558,7 @@ class TestPrepareForSave:
 
     async def test_update_from_community(self, mock_store, mock_engine):
         """Editing a community detection preserves community fields."""
-        now = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 1, tzinfo=UTC)
         old_det = Detection(
             id="12345",
             public_id="67890",
@@ -1598,7 +1597,7 @@ class TestPrepareForSave:
 
     async def test_with_new_override(self, mock_store, mock_engine):
         """New override gets timestamps set."""
-        now = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 1, tzinfo=UTC)
         mock_store.get_detection_by_public_id = AsyncMock(return_value=None)
         mock_store.get_detection = AsyncMock(
             return_value=Detection(id="12345", create_time=now)
@@ -1624,7 +1623,7 @@ class TestPrepareForSave:
 
     async def test_with_preexisting_overrides(self, mock_store, mock_engine):
         """Pre-existing override matched in old -> UpdatedAt not changed."""
-        now = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        now = datetime(2024, 1, 1, tzinfo=UTC)
         override = Override(
             type=OverrideType.MODIFY,
             created_at=now,

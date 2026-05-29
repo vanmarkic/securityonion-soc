@@ -6,11 +6,11 @@ from src.api.clients_routes import router as clients_router
 from src.api.config_routes import router as config_router
 from src.api.detection_routes import router as detection_router
 from src.api.events_routes import router as events_router
-from src.api.job_routes import router as job_router
-from src.api.jobs_routes import router as jobs_router
 from src.api.grid_routes import router as grid_router
 from src.api.gridmembers_routes import router as gridmembers_router
 from src.api.info_routes import router as info_router
+from src.api.job_routes import router as job_router
+from src.api.jobs_routes import router as jobs_router
 from src.api.node_routes import router as node_router
 from src.api.packet_routes import router as packet_router
 from src.api.playbook_routes import router as playbook_router

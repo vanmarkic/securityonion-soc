@@ -8,12 +8,11 @@ from unittest.mock import AsyncMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from src.api.clients_routes import get_clients_service, get_request_context_dep
 from src.domain.client import Client
 from src.main import app
-from src.api.clients_routes import get_clients_service, get_request_context_dep
 from src.services.clients_service import ClientsService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Helpers

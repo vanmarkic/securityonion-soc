@@ -45,7 +45,7 @@ async def create_case(
     try:
         result = await service.create_case(case)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return result.model_dump(by_alias=True)
 
 
@@ -58,7 +58,7 @@ async def create_comment(
     try:
         result = await service.create_comment(comment)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return result.model_dump(by_alias=True)
 
 
@@ -71,7 +71,7 @@ async def create_artifact(
     try:
         result = await service.create_artifact(artifact)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return result.model_dump(by_alias=True)
 
 
@@ -85,7 +85,7 @@ async def create_events(
     try:
         count = await service.attach_events(criteria)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return JSONResponse(status_code=202, content={"count": count})
 
 
@@ -99,7 +99,7 @@ async def create_task(
     try:
         result = await service.create_artifact(artifact)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return result.model_dump(by_alias=True)
 
 
@@ -114,7 +114,7 @@ async def get_cases(
     try:
         result = await service.get_case(id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     if result is None:
         raise HTTPException(status_code=404, detail="Case not found")
     return result.model_dump(by_alias=True)
@@ -130,7 +130,7 @@ async def get_comments_query(
     try:
         results = await service.get_comments(id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return [c.model_dump(by_alias=True) for c in results]
 
 
@@ -143,7 +143,7 @@ async def get_comments(
     try:
         results = await service.get_comments(case_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return [c.model_dump(by_alias=True) for c in results]
 
 
@@ -157,7 +157,7 @@ async def get_events_query(
     try:
         results = await service.get_related_events(id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return [e.model_dump(by_alias=True) for e in results]
 
 
@@ -170,7 +170,7 @@ async def get_events(
     try:
         results = await service.get_related_events(case_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return [e.model_dump(by_alias=True) for e in results]
 
 
@@ -207,7 +207,7 @@ async def get_artifact_by_id(
     try:
         results = await service.get_artifacts(artifact_id, group_type, group_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return [a.model_dump(by_alias=True) for a in results]
 
 
@@ -222,7 +222,7 @@ async def get_artifacts_by_group(
     try:
         results = await service.get_artifacts(id, group_type, group_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return [a.model_dump(by_alias=True) for a in results]
 
 
@@ -236,7 +236,7 @@ async def get_artifacts_by_type(
     try:
         results = await service.get_artifacts(id, group_type, "")
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return [a.model_dump(by_alias=True) for a in results]
 
 
@@ -250,7 +250,7 @@ async def get_history_query(
     try:
         result = await service.get_case_history(id)
     except Exception:
-        raise HTTPException(status_code=404, detail="Case not found")
+        raise HTTPException(status_code=404, detail="Case not found") from None
     return result
 
 
@@ -263,7 +263,7 @@ async def get_history(
     try:
         result = await service.get_case_history(case_id)
     except Exception:
-        raise HTTPException(status_code=404, detail="Case not found")
+        raise HTTPException(status_code=404, detail="Case not found") from None
     return result
 
 
@@ -281,7 +281,7 @@ async def get_case(
     try:
         result = await service.get_case(case_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     if result is None:
         raise HTTPException(status_code=404, detail="Case not found")
     return result.model_dump(by_alias=True)
@@ -298,7 +298,7 @@ async def update_case(
     try:
         result = await service.update_case(case)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return result.model_dump(by_alias=True)
 
 
@@ -311,7 +311,7 @@ async def update_comment(
     try:
         result = await service.update_comment(comment)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return result.model_dump(by_alias=True)
 
 
@@ -325,7 +325,7 @@ async def update_artifact(
     try:
         result = await service.update_artifact(artifact)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
     return result.model_dump(by_alias=True)
 
 
@@ -341,7 +341,7 @@ async def delete_comment_query(
     try:
         await service.delete_comment(id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 @router.delete("/case/comments/{comment_id}")
@@ -353,7 +353,7 @@ async def delete_comment(
     try:
         await service.delete_comment(comment_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 @router.delete("/case/events")
@@ -366,7 +366,7 @@ async def delete_event_query(
     try:
         await service.delete_related_event(id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 @router.delete("/case/events/{event_id}")
@@ -378,7 +378,7 @@ async def delete_event(
     try:
         await service.delete_related_event(event_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 @router.delete("/case/tasks")
@@ -392,7 +392,7 @@ async def delete_artifact_query(
     try:
         await service.delete_artifact(id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 @router.delete("/case/tasks/{artifact_id}")
@@ -405,7 +405,7 @@ async def delete_artifact(
     try:
         await service.delete_artifact(artifact_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
 
 # -- Helpers --

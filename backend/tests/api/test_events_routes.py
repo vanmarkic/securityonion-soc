@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
@@ -11,6 +9,8 @@ from httpx import ASGITransport, AsyncClient
 from src.api.events_routes import (
     get_events_service,
     get_request_context_dep,
+)
+from src.api.events_routes import (
     router as events_router,
 )
 from src.domain.event import (
@@ -21,7 +21,6 @@ from src.domain.event import (
 )
 from src.services.events_service import EventsService
 from src.shared.context import RequestContext
-
 
 # ---------------------------------------------------------------------------
 # Fake Eventstore — stub for testing

@@ -1,6 +1,5 @@
 """Tests for Node domain model — ported from Go model/node_test.go."""
 
-import pytest
 
 from src.domain.node import (
     NODE_STATUS_FAULT,
@@ -8,10 +7,8 @@ from src.domain.node import (
     NODE_STATUS_PENDING,
     NODE_STATUS_RESTART,
     NODE_STATUS_UNKNOWN,
-    Node,
     new_node,
 )
-
 
 # ---------------------------------------------------------------------------
 # TestSetModel

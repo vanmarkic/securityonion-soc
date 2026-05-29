@@ -2,7 +2,6 @@
 
 import io
 
-import pytest
 from httpx import ASGITransport, AsyncClient
 
 from src.api.gridmembers_routes import get_gridmembers_service
@@ -44,6 +43,7 @@ def _make_app(
     authorizer: Authorizer | None = None,
 ):
     from fastapi import FastAPI
+
     from src.api.gridmembers_routes import router
 
     test_app = FastAPI()

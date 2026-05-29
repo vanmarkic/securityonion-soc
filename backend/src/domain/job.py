@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -21,10 +21,10 @@ class Job(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     id: int = 0
-    create_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), alias="createTime")
+    create_time: datetime = Field(default_factory=lambda: datetime.now(UTC), alias="createTime")
     status: int = JOB_STATUS_PENDING
-    complete_time: datetime = Field(default_factory=lambda: datetime.min.replace(tzinfo=timezone.utc), alias="completeTime")
-    fail_time: datetime = Field(default_factory=lambda: datetime.min.replace(tzinfo=timezone.utc), alias="failTime")
+    complete_time: datetime = Field(default_factory=lambda: datetime.min.replace(tzinfo=UTC), alias="completeTime")
+    fail_time: datetime = Field(default_factory=lambda: datetime.min.replace(tzinfo=UTC), alias="failTime")
     failure: str = ""
     fail_count: int = Field(default=0, alias="failCount")
     owner: str = ""
@@ -60,18 +60,18 @@ class Job(BaseModel):
     def complete(self) -> None:
         """Mark the job as completed."""
         self.status = JOB_STATUS_COMPLETED
-        self.complete_time = datetime.now(timezone.utc)
+        self.complete_time = datetime.now(UTC)
 
     def fail(self, error: str) -> None:
         """Mark the job as incomplete with an error."""
         self.status = JOB_STATUS_INCOMPLETE
         self.failure = error
-        self.fail_time = datetime.now(timezone.utc)
+        self.fail_time = datetime.now(UTC)
         self.fail_count += 1
 
     def is_eligible_for_retry(self, retry_interval_ms: int, retry_max_attempts: int) -> bool:
         """Return True if the job can be retried."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         retry_time = self.fail_time + timedelta(milliseconds=retry_interval_ms)
         return self.fail_count < retry_max_attempts and retry_time < now
 

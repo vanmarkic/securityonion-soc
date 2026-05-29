@@ -96,7 +96,7 @@ async def post_node(
     try:
         _updated_node, job = await service.checkin(node)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     if job is None:
         return JSONResponse(content=None, status_code=200)

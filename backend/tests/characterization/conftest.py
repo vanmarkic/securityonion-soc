@@ -53,7 +53,7 @@ def compare_shape(expected: Any, actual: Any, path: str = "") -> list[str]:
     elif isinstance(expected, list) and isinstance(actual, list):
         if len(expected) > 0 and len(actual) > 0:
             diffs.extend(compare_shape(expected[0], actual[0], f"{path}[0]"))
-    elif type(expected) != type(actual):
+    elif type(expected) is not type(actual):
         diffs.append(f"{path}: type mismatch (expected {type(expected).__name__}, got {type(actual).__name__})")
 
     return diffs

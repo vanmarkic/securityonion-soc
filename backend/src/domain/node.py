@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 NODE_ROLE_DESKTOP = "so-desktop"
 NODE_STATUS_UNKNOWN = "unknown"
@@ -43,8 +43,8 @@ _MODEL_IMAGES: dict[str, tuple[str, str]] = {
 class Node:
     def __init__(self, node_id: str) -> None:
         self.id = node_id
-        self.online_time: datetime = datetime.now(timezone.utc)
-        self.update_time: datetime = datetime.now(timezone.utc)
+        self.online_time: datetime = datetime.now(UTC)
+        self.update_time: datetime = datetime.now(UTC)
         self.epoch_time: datetime | None = None
         self.uptime_seconds: int = 0
         self.description: str = ""

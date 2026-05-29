@@ -6,13 +6,11 @@ import ipaddress
 import re
 from datetime import datetime
 from enum import StrEnum
-from typing import Optional
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.domain.case import Auditable
-
 
 # ---------------------------------------------------------------------------
 # Enums
@@ -93,13 +91,13 @@ def _validate_single_ip(ip: str) -> None:
         try:
             ipaddress.ip_network(ip, strict=False)
         except ValueError:
-            raise ValueError(f"invalid CIDR {ip!r}")
+            raise ValueError(f"invalid CIDR {ip!r}") from None
         return
 
     try:
         ipaddress.ip_address(ip)
     except ValueError:
-        raise ValueError(f"invalid IP address {ip!r}")
+        raise ValueError(f"invalid IP address {ip!r}") from None
 
 
 def _validate_suricata_ip(ip: str) -> None:
@@ -137,24 +135,24 @@ class OverrideParameters(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     # modify (suricata only)
-    regex: Optional[str] = None
-    value: Optional[str] = None
+    regex: str | None = None
+    value: str | None = None
 
     # threshold (suricata only)
-    threshold_type: Optional[str] = Field(default=None, alias="thresholdType")
+    threshold_type: str | None = Field(default=None, alias="thresholdType")
 
     # suppress + threshold (suricata only)
-    track: Optional[str] = None
+    track: str | None = None
 
     # suppress (suricata only)
-    ip: Optional[str] = None
+    ip: str | None = None
 
     # threshold (suricata only)
-    count: Optional[int] = None
-    seconds: Optional[int] = None
+    count: int | None = None
+    seconds: int | None = None
 
     # customFilter (elastalert only)
-    custom_filter: Optional[str] = Field(default=None, alias="customFilter")
+    custom_filter: str | None = Field(default=None, alias="customFilter")
 
 
 class Override(BaseModel):
@@ -165,8 +163,8 @@ class Override(BaseModel):
     type: str = ""
     is_enabled: bool = Field(default=False, alias="isEnabled")
     note: str = ""
-    created_at: Optional[datetime] = Field(default=None, alias="createdAt")
-    updated_at: Optional[datetime] = Field(default=None, alias="updatedAt")
+    created_at: datetime | None = Field(default=None, alias="createdAt")
+    updated_at: datetime | None = Field(default=None, alias="updatedAt")
     override_parameters: OverrideParameters = Field(
         default_factory=OverrideParameters,
         alias="overrideParameters",
@@ -311,7 +309,7 @@ class Override(BaseModel):
             raise ValueError("invalid override type")
 
     @staticmethod
-    def equal(one: Optional[Override], two: Optional[Override]) -> bool:
+    def equal(one: Override | None, two: Override | None) -> bool:
         """Compare two overrides for equality (mirrors Go's Override.Equal)."""
         if one is None and two is None:
             return True
@@ -395,11 +393,11 @@ class Detection(Auditable):
     tags: list[str] = Field(default_factory=list)
     ruleset: str = ""
     license: str = ""
-    source_created: Optional[datetime] = Field(default=None, alias="sourceCreated")
-    source_updated: Optional[datetime] = Field(default=None, alias="sourceUpdated")
+    source_created: datetime | None = Field(default=None, alias="sourceCreated")
+    source_updated: datetime | None = Field(default=None, alias="sourceUpdated")
     product: str = ""
     service: str = ""
-    ai_fields: Optional[AiFields] = Field(default=None, alias="aiFields")
+    ai_fields: AiFields | None = Field(default=None, alias="aiFields")
 
     def validate(self) -> None:
         """Validate the detection and all its overrides.

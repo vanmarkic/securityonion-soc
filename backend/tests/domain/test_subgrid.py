@@ -2,8 +2,6 @@
 
 import json
 
-import pytest
-
 from src.domain.subgrid import Subgrid
 
 

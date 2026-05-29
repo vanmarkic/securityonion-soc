@@ -1,6 +1,6 @@
 """Tests for Setting domain model — ported from Go model/config_test.go."""
 
-from src.domain.config import Setting, is_valid_minion_id, is_valid_setting_id, new_setting
+from src.domain.config import is_valid_minion_id, is_valid_setting_id, new_setting
 
 
 class TestNewSetting:

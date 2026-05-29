@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from src.domain.detection import (
@@ -100,7 +100,7 @@ class DetectionService:
             raise InvalidRequest("cannot create community detections using this endpoint")
 
         # Timestamp overrides
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         for over in detection.overrides:
             if over.created_at is None:
                 over.created_at = now
@@ -255,7 +255,7 @@ class DetectionService:
         if old.license:
             detection.license = old.license
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         for over in detection.overrides:
             if over.created_at is None:
@@ -337,12 +337,11 @@ class DetectionService:
         """
         await self._authorizer.check_authorized(user_id, "write", "detections")
 
-        enable = False
         delete = False
         if new_status == "enable":
-            enable = True
+            pass
         elif new_status == "disable":
-            enable = False
+            pass
         elif new_status == "delete":
             delete = True
         else:

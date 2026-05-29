@@ -4,14 +4,13 @@ import pytest
 
 from src.domain.detection import (
     Detection,
+    EngineName,
     Override,
     OverrideParameters,
-    EngineName,
     OverrideType,
     Severity,
     SigLanguage,
 )
-
 
 # ---------------------------------------------------------------------------
 # TestDetectionOverrideValidate — table-driven, ported 1:1 from Go

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -70,7 +70,7 @@ class Case(Auditable):
 
     def process_workflow_for_status(self, old_case: Case) -> None:
         """Update start/complete times based on status transitions."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if self.status == "closed" and old_case.status != "closed":
             self.complete_time = now
         if old_case.start_time is not None:
@@ -144,17 +144,17 @@ def new_case() -> Case:
 
 
 def new_related_event() -> RelatedEvent:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return RelatedEvent(create_time=now, fields={})
 
 
 def new_artifact() -> Artifact:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return Artifact(create_time=now)
 
 
 def new_artifact_stream() -> ArtifactStream:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return ArtifactStream(create_time=now)
 
 

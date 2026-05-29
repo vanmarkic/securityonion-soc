@@ -36,6 +36,7 @@ class FakeConfigstore:
 def _make_app_and_client(configstore: FakeConfigstore | None):
     """Create a fresh FastAPI app with config routes and dependency overrides."""
     from fastapi import FastAPI
+
     from src.api.config_routes import router
 
     test_app = FastAPI()

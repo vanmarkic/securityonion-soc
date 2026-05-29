@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-from typing import IO
-
 import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from src.api.stream_routes import get_stream_service, router as stream_router
+from src.api.stream_routes import get_stream_service
+from src.api.stream_routes import router as stream_router
 from src.services.stream_service import StreamService
-
 
 # ---------------------------------------------------------------------------
 # Fake Datastore — stub for testing

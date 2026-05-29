@@ -7,7 +7,6 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 MESSAGE_TAG_CONTEXT_COMPRESSION = "context_compression"
 
 

@@ -41,7 +41,7 @@ async def get_roles(
     try:
         return await service.get_roles()
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -57,4 +57,4 @@ async def get_permissions(
     try:
         return await service.get_permissions()
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None

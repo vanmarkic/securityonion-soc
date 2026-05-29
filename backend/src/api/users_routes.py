@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 from src.domain.user import User
 from src.services.users_service import (
@@ -60,7 +60,7 @@ async def get_users(
     try:
         users = await service.get_users()
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return [u.model_dump(by_alias=True) for u in users]
 
 
@@ -78,9 +78,9 @@ async def create_user(
     try:
         result = await service.create_user(user)
     except ValidationError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return result.model_dump(by_alias=True)
 
 
@@ -99,9 +99,9 @@ async def add_role(
     try:
         await service.add_role(user_id, role)
     except (InvalidId, InvalidRole) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -117,7 +117,7 @@ async def sync_users(
     try:
         await service.sync_users()
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -135,9 +135,9 @@ async def update_user(
     try:
         result = await service.update_profile(user_id, user)
     except ValidationError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
     return result.model_dump(by_alias=True)
 
 
@@ -156,9 +156,9 @@ async def reset_password(
     try:
         await service.reset_password(user_id, body.password)
     except InvalidId as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -176,9 +176,9 @@ async def toggle_user(
     try:
         await service.toggle_user(user_id, toggle)
     except (InvalidId, InvalidToggle) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -195,9 +195,9 @@ async def delete_user(
     try:
         await service.delete_user(user_id)
     except InvalidId as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None
 
 
 # ------------------------------------------------------------------
@@ -215,6 +215,6 @@ async def delete_user_role(
     try:
         await service.delete_role(user_id, role)
     except (InvalidId, InvalidRole) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from None
     except Exception:
-        raise HTTPException(status_code=500)
+        raise HTTPException(status_code=500) from None

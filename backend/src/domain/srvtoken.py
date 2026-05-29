@@ -6,7 +6,7 @@ import base64
 import hashlib
 import hmac
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from pydantic import BaseModel, ConfigDict
 
@@ -17,14 +17,14 @@ class SrvToken(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     id: str = ""
-    expiration: datetime = datetime.min.replace(tzinfo=timezone.utc)
+    expiration: datetime = datetime.min.replace(tzinfo=UTC)
     hash: bytes | None = None
 
     def validate(self, id: str) -> str | None:
         """Validate token id and expiration. Returns error string or None."""
         if self.id != id:
             return "SRV token id mismatch"
-        if self.expiration < datetime.now(timezone.utc):
+        if self.expiration < datetime.now(UTC):
             return "SRV token expired"
         return None
 
@@ -60,7 +60,7 @@ def _token_from_json(raw: bytes) -> SrvToken:
 
 def new_srv_token(id: str, valid_seconds: int) -> SrvToken:
     """Create a new SrvToken with the given validity duration."""
-    expiration = datetime.now(timezone.utc) + timedelta(seconds=valid_seconds)
+    expiration = datetime.now(UTC) + timedelta(seconds=valid_seconds)
     return SrvToken(id=id, expiration=expiration)
 
 

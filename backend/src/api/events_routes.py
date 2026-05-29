@@ -84,7 +84,7 @@ async def get_events(
     try:
         results = await service.search(criteria)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     return JSONResponse(content={
         "totalEvents": results.total_events,

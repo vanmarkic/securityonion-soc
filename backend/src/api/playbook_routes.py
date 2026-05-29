@@ -51,7 +51,7 @@ async def get_playbook(
     try:
         await authorizer.check_authorized(ctx.requestor_id, "read", "playbooks")
     except Unauthorized:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden") from None
 
     if not playbook_id:
         raise HTTPException(status_code=400, detail="playbook id required")
@@ -59,7 +59,7 @@ async def get_playbook(
     try:
         result = await service.get_playbook(playbook_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     if result is None:
         return None
@@ -78,7 +78,7 @@ async def get_playbooks_for_detection(
     try:
         await authorizer.check_authorized(ctx.requestor_id, "read", "playbooks")
     except Unauthorized:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden") from None
 
     if not detection_id:
         raise HTTPException(status_code=400, detail="detection id required")
@@ -90,7 +90,7 @@ async def get_playbooks_for_detection(
             detection_id, raw=raw_response,
         )
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     if status == 404:
         raise HTTPException(status_code=404, detail="Detection not found")
@@ -118,7 +118,7 @@ async def get_event_specific_playbook(
     try:
         await authorizer.check_authorized(ctx.requestor_id, "read", "playbooks")
     except Unauthorized:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=403, detail="Forbidden") from None
 
     if not soc_id:
         raise HTTPException(status_code=400, detail="SOC id required")
@@ -126,7 +126,7 @@ async def get_event_specific_playbook(
     try:
         result, status = await service.get_event_specific_playbook(soc_id)
     except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error") from None
 
     if status == 404:
         raise HTTPException(status_code=404, detail="Event not found")

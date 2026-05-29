@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from src.domain.query import Query
 
@@ -12,9 +12,9 @@ def _parse_datetime(s: str, fmt: str, tz_name: str) -> tuple[datetime | None, st
     import zoneinfo
 
     try:
-        loc = zoneinfo.ZoneInfo(tz_name)
+        _loc = zoneinfo.ZoneInfo(tz_name)
     except (KeyError, zoneinfo.ZoneInfoNotFoundError):
-        loc = zoneinfo.ZoneInfo("UTC")
+        _loc = zoneinfo.ZoneInfo("UTC")
 
     try:
         # Python's %z handles timezone offsets in the string itself
@@ -30,7 +30,7 @@ def _parse_date_range(
     """Parse a date range string separated by ' - '."""
     parts = date_range.split(" - ", 1)
     if len(parts) != 2:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         from datetime import timedelta
         begin = now - timedelta(hours=24)
         return begin, now, None
@@ -52,13 +52,13 @@ def _parse_date_range(
 
 class EventResults:
     def __init__(self) -> None:
-        self.create_time: datetime = datetime.now(timezone.utc)
-        self.complete_time: datetime = datetime.min.replace(tzinfo=timezone.utc)
+        self.create_time: datetime = datetime.now(UTC)
+        self.complete_time: datetime = datetime.min.replace(tzinfo=UTC)
         self.elapsed_ms: int = 0
         self.errors: list[str] = []
 
     def complete(self) -> None:
-        self.complete_time = datetime.now(timezone.utc)
+        self.complete_time = datetime.now(UTC)
 
 
 # ---------------------------------------------------------------------------
@@ -79,7 +79,7 @@ class EventSearchCriteria:
         self.event_limit: int = 25
         self.begin_time: datetime | None = None
         self.end_time: datetime | None = None
-        self.create_time: datetime = datetime.now(timezone.utc)
+        self.create_time: datetime = datetime.now(UTC)
         self.parsed_query: Query = Query()
         self.sort_fields: list[SortCriteria] = []
         self.search_after: list[object] = []

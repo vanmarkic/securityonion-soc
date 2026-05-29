@@ -1,14 +1,12 @@
 """Tests for the InfoService."""
 
 import json
-import os
 import tempfile
 from pathlib import Path
 
 from src.domain.info import Info, LicenseKey
 from src.domain.user import User
 from src.services.info_service import InfoService
-
 
 GOLDEN_MASTER = Path(__file__).parent.parent / "characterization" / "golden_masters" / "get_api_info.json"
 
