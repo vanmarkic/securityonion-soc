@@ -84,18 +84,25 @@ async def save_with_audit(
     document: dict[str, Any],
     doc_id: str,
     prefix: str,
+    operation: str | None = None,
 ) -> IndexResult:
     """Index a live document, then write an audit snapshot (Go ``save``).
 
-    ``operation`` is ``create`` when ``doc_id`` is empty, otherwise ``update``.
-    The audit document carries ``<prefix>audit_doc_id`` set to the live
-    document's id and is indexed with an auto-generated id. An audit-write
-    failure is logged, not raised.
+    ``operation`` is ``create`` when ``doc_id`` is empty, otherwise ``update``,
+    unless an explicit ``operation`` override is supplied (Go's
+    ``modcontext.WriteOverrideOperation`` — the detection create path forces
+    ``create`` even though the document is indexed with a deterministic id). The
+    audit document carries ``<prefix>audit_doc_id`` set to the live document's id
+    and is indexed with an auto-generated id. An audit-write failure is logged,
+    not raised.
     """
     result = await index_document(es, index, document, doc_id)
 
     document[prefix + AUDIT_DOC_ID] = result.document_id
-    document[prefix + "operation"] = "create" if doc_id == "" else "update"
+    if operation is not None:
+        document[prefix + "operation"] = operation
+    else:
+        document[prefix + "operation"] = "create" if doc_id == "" else "update"
     try:
         await index_document(es, audit_index, document, "")
     except Exception:  # noqa: BLE001 — audit failure must not mask the live write
