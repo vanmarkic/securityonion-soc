@@ -315,9 +315,9 @@ def test_to_uuid_deterministic_and_v4_shape():
 
 
 def test_to_uuid_matches_go_golden():
-    # Golden value captured from Go util.ToUUID — REPLACE with the value
-    # produced by running the Go TestToUUID (or `go test`) for this input.
-    assert to_uuid("12345") == "<GO_GOLDEN_UUID>"
+    # Golden values captured from the real Go util.ToUUID (verified byte-identical).
+    assert to_uuid("12345") == "dd85fe82-bddb-4489-b936-3428988506bb"
+    assert to_uuid("my-public-id") == "972b27fb-a7ac-4820-b98c-8640e2425d98"
 
 
 @pytest.mark.parametrize("ident", ["abc", "a-b_c", "x" * 128, "12345"])
@@ -340,8 +340,10 @@ def test_validate_id_rejects(ident):
     assert validate_id(ident, "caseId") == "invalid ID for caseId"
 ```
 
-> Before running, capture `<GO_GOLDEN_UUID>` by running the Go test:
-> `cd /Users/dragan/Documents/securityonion-soc && go test ./util/ -run TestToUUID -v` (or add a tiny `main` that prints `util.ToUUID("12345")`). Paste the exact value. `to_uuid` MUST be byte-identical because it drives stable detection `_id`s.
+> Goldens already captured & verified against the real Go `util.ToUUID`:
+> `to_uuid("12345") == "dd85fe82-bddb-4489-b936-3428988506bb"`,
+> `to_uuid("my-public-id") == "972b27fb-a7ac-4820-b98c-8640e2425d98"`.
+> `to_uuid` MUST be byte-identical because it drives stable detection `_id`s — use the exact algorithm below (a faithful mirror of `util/strings.go`).
 
 **Step 2 — run to confirm red**
 ```
@@ -369,16 +371,19 @@ def escape_painless(value: str) -> str:
 
 
 def to_uuid(s: str) -> str:
-    # Port util.ToUUID: sha256 -> XOR-fold 32->16 -> fold 16->15 -> hex ->
-    # format with forced '4' version nibble and 'b' variant char.
-    digest = hashlib.sha256(s.encode("utf-8")).digest()  # 32 bytes
-    folded = bytes(digest[i] ^ digest[i + 16] for i in range(16))  # 16 bytes
-    # fold 16 -> 15 (mirror the exact Go fold; verify against golden value)
-    b = bytearray(folded[:15])
-    b[0] ^= folded[15]
-    hexs = b.hex()  # 30 hex chars
-    # 8-4-4-4-12 layout; force version '4' and variant 'b' (per Go)
-    return f"{hexs[0:8]}-{hexs[8:12]}-4{hexs[13:16]}-b{hexs[17:20]}-{hexs[20:30]}"
+    # Faithful mirror of util/strings.go ToUUID (verified byte-identical):
+    #   sha256 (32B) -> XOR-fold 32->16 (h[i] ^= h[16+i]) -> fold 16->15
+    #   (h[0] ^= h[15]; h = h[:15]) -> 30 hex chars -> 8-4-(4..)-(b..)-12 layout
+    #   with literal '4' version nibble and literal 'b' variant char.
+    h = bytearray(hashlib.sha256(s.encode("utf-8")).digest())  # 32 bytes
+    for i in range(16):
+        h[i] ^= h[16 + i]
+    h = h[:16]
+    h[0] ^= h[15]
+    h = h[:15]
+    hx = h.hex()  # 30 hex chars
+    # NOTE: indices are contiguous — do NOT skip chars: hx[12:15], hx[15:18], hx[18:]
+    return f"{hx[0:8]}-{hx[8:12]}-4{hx[12:15]}-b{hx[15:18]}-{hx[18:]}"
 
 
 def validate_id(id_: str, label: str) -> str | None:
@@ -389,7 +394,7 @@ def validate_public_id(id_: str, label: str) -> str | None:
     return None if _PUBLIC_ID_RE.match(id_) else f"invalid ID for {label}"
 ```
 
-> The `to_uuid` fold/format sketch above is a starting point — **iterate** the slicing until `test_to_uuid_matches_go_golden` passes against the captured Go value. The hex-index layout (positions 13/17 etc.) encodes the forced nibbles; adjust to make the golden match exactly. This is the single most important byte-for-byte port.
+> The `to_uuid` algorithm above is verified byte-identical to Go `util.ToUUID` for the goldens in the test. Implement it exactly as written (contiguous hex indices `hx[12:15]`/`hx[15:18]`/`hx[18:]` — an earlier draft skipped chars and was wrong). This is the single most important byte-for-byte port.
 
 **Step 4 — run green** (same command)
 
