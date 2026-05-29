@@ -39,8 +39,12 @@ Divergence from Go:
 
 Task 18 implements ``save_chat`` / ``get_chat_history`` / ``create_session`` /
 ``get_sessions`` (+ ``addMetaFromMessages``) / ``update_session_tags`` /
-``delete_session``. Task 19 adds the usage aggregations (``populate_session_usage``
-+ ``get_usage``).
+``delete_session``. Task 19 adds the usage aggregations: ``populate_session_usage``
+(per-session token usage via msearch, attached positionally when
+``GetSessionsQuery.with_usage`` is set — running before ``addMetaFromMessages``
+to match Go's ordering) and ``get_usage`` (a single size-0 per-user aggregation
+search over the chat index). Go's ``GetUsage`` ``CheckAuthorized("read_all")`` is
+dropped per the no-ctx/no-auth divergence above.
 """
 
 from __future__ import annotations
@@ -62,8 +66,11 @@ from src.domain.assistant import (
     ContentBlock,
     GetSessionsQuery,
     Message,
+    ModelUsageStats,
+    SessionUsage,
     StoredMessage,
     Usage,
+    UserUsage,
 )
 
 logger = logging.getLogger(__name__)
@@ -167,6 +174,52 @@ def _saveable_stored_message(chat: StoredMessage) -> dict[str, Any]:
         out["tags"] = chat.tags
     if chat.model:
         out["model"] = chat.model
+    return out
+
+
+def _agg_int(parent: dict[str, Any], name: str) -> int:
+    """Read ``parent[name]["value"]`` as a truncated int.
+
+    Mirrors Go's ``int(value.(float64))`` (truncate toward zero); a missing
+    aggregation or non-numeric value yields 0.
+    """
+    agg = parent.get(name)
+    if isinstance(agg, dict):
+        value = agg.get("value")
+        if isinstance(value, (int, float)):
+            return int(value)
+    return 0
+
+
+def _parse_model_usage(
+    parent: dict[str, Any],
+) -> dict[str, ModelUsageStats] | None:
+    """Parse a ``model_usage`` terms aggregation into per-model stats.
+
+    Port of the Go ``model_usage`` bucket loop (shared by populateSessionUsage
+    and GetUsage): only populated when at least one bucket is present, and
+    buckets with an empty ``key`` are skipped. Float ``.value`` fields are
+    truncated to int.
+    """
+    by_model = parent.get("model_usage")
+    if not isinstance(by_model, dict):
+        return None
+    buckets = by_model.get("buckets")
+    if not isinstance(buckets, list) or not buckets:
+        return None
+    out: dict[str, ModelUsageStats] = {}
+    for bucket in buckets:
+        if not isinstance(bucket, dict):
+            continue
+        model_key = bucket.get("key")
+        if not isinstance(model_key, str) or model_key == "":
+            continue
+        out[model_key] = ModelUsageStats(
+            modelInputTokens=_agg_int(bucket, "model_input_tokens"),
+            modelOutputTokens=_agg_int(bucket, "model_output_tokens"),
+            modelCredits=_agg_int(bucket, "model_credits"),
+            modelMessages=_agg_int(bucket, "model_messages"),
+        )
     return out
 
 
@@ -342,9 +395,11 @@ class ElasticAssistantstore:
         """Port of ``GetSessions`` (elasticassistantstore.go:375).
 
         Builds the term/range/soft-delete query, parses session hits (skipping
-        malformed ones), then always enriches update times via
-        ``addMetaFromMessages`` (Go calls it unconditionally). Per-session usage
-        enrichment (``with_usage``) is deferred to Task 19.
+        malformed ones), optionally enriches per-session token usage via
+        ``populateSessionUsage`` (when ``with_usage`` is set), then always
+        enriches update times via ``addMetaFromMessages`` (Go calls it
+        unconditionally). Matching Go's ordering, the usage msearch precedes the
+        ``addMetaFromMessages`` msearch.
         """
         prefix = self._prefix
         must: list[dict[str, Any]] = [{"term": {prefix + "kind": "session"}}]
@@ -380,6 +435,8 @@ class ElasticAssistantstore:
             session.id = hit.get("_id", "")
             sessions.append(session)
 
+        if query.with_usage:
+            await self.populate_session_usage(sessions)
         await self._add_meta_from_messages(sessions)
         return sessions
 
@@ -463,6 +520,157 @@ class ElasticAssistantstore:
             refresh=True,
             wait_for_completion=True,
         )
+
+    # ------------------------------------------------------------------
+    # usage aggregations (Go populateSessionUsage / GetUsage)
+    # ------------------------------------------------------------------
+
+    def _session_usage_aggs(self) -> dict[str, Any]:
+        """Per-session usage aggregation body (Go populateSessionUsage:642)."""
+        prefix = self._prefix
+        usage = prefix + "chat.message.usage."
+        return {
+            "total_input_tokens": {"sum": {"field": usage + "input_tokens"}},
+            "total_output_tokens": {"sum": {"field": usage + "output_tokens"}},
+            "total_credits": {"sum": {"field": usage + "credits"}},
+            "total_messages": {
+                "value_count": {"field": prefix + "chat.sessionId"},
+            },
+            "model_usage": {
+                "terms": {"field": prefix + "chat.model", "size": 100},
+                "aggs": {
+                    "model_input_tokens": {
+                        "sum": {"field": usage + "input_tokens"},
+                    },
+                    "model_output_tokens": {
+                        "sum": {"field": usage + "output_tokens"},
+                    },
+                    "model_credits": {"sum": {"field": usage + "credits"}},
+                    "model_messages": {
+                        "value_count": {"field": prefix + "chat.sessionId"},
+                    },
+                },
+            },
+        }
+
+    async def populate_session_usage(
+        self, sessions: list[AssistantSession],
+    ) -> None:
+        """Port of ``populateSessionUsage`` (elasticassistantstore.go:611).
+
+        Issues one size-0 token-usage aggregation per session via msearch and
+        attaches a :class:`SessionUsage` to each session positionally
+        (``responses[i] <-> sessions[i]``). Empty session lists short-circuit; a
+        per-response ``error`` leaves that session's usage unset. Aggregation
+        ``.value`` floats are truncated to int. Like ``addMetaFromMessages`` the
+        msearch targets the full cross-cluster ``_chat_index`` (un-stripped).
+        """
+        if not sessions:
+            return
+
+        prefix = self._prefix
+        searches: list[dict[str, Any]] = []
+        for session in sessions:
+            searches.append({})  # header line (default index)
+            searches.append({
+                "query": {"bool": {"must": [
+                    {"term": {prefix + "chat.sessionId": session.session_id}},
+                    {"term": {prefix + "kind": "chat"}},
+                ]}},
+                "aggs": self._session_usage_aggs(),
+                "size": 0,
+            })
+
+        resp = await self._es.msearch(index=self._chat_index, searches=searches)
+        responses = dict(resp).get("responses", [])
+        for i, sub in enumerate(responses):
+            if i >= len(sessions):
+                break
+            if not isinstance(sub, dict) or "error" in sub:
+                continue
+            aggs = sub.get("aggregations")
+            if not isinstance(aggs, dict):
+                continue
+            sessions[i].usage = SessionUsage(
+                totalInputTokens=_agg_int(aggs, "total_input_tokens"),
+                totalOutputTokens=_agg_int(aggs, "total_output_tokens"),
+                totalCredits=_agg_int(aggs, "total_credits"),
+                totalMessages=_agg_int(aggs, "total_messages"),
+                modelUsage=_parse_model_usage(aggs),
+            )
+
+    async def get_usage(
+        self, start: datetime, end: datetime,
+    ) -> list[UserUsage]:
+        """Port of ``GetUsage`` (elasticassistantstore.go:1133).
+
+        Runs a single size-0 aggregation search over the chat index: a terms
+        aggregation on ``<prefix>chat.userId`` (size 10000) with token sums, a
+        ``value_count`` on userId, a ``cardinality`` on ``sessionId`` for the
+        session count, and a nested ``model_usage`` terms aggregation. Returns a
+        :class:`UserUsage` per user bucket in bucket order; ``.value`` floats are
+        truncated to int and empty model-bucket keys are skipped.
+        """
+        prefix = self._prefix
+        usage = prefix + "chat.message.usage."
+        query: dict[str, Any] = {"bool": {"must": [
+            {"term": {prefix + "kind": "chat"}},
+            {"range": {"@timestamp": {
+                "gte": _rfc3339(start),
+                "lte": _rfc3339(end),
+            }}},
+        ]}}
+        aggs: dict[str, Any] = {"users": {
+            "terms": {"field": prefix + "chat.userId", "size": 10000},
+            "aggs": {
+                "total_input_tokens": {"sum": {"field": usage + "input_tokens"}},
+                "total_output_tokens": {
+                    "sum": {"field": usage + "output_tokens"},
+                },
+                "total_credits": {"sum": {"field": usage + "credits"}},
+                "total_messages": {
+                    "value_count": {"field": prefix + "chat.userId"},
+                },
+                "total_sessions": {
+                    "cardinality": {"field": prefix + "chat.sessionId"},
+                },
+                "model_usage": {
+                    "terms": {"field": prefix + "chat.model", "size": 100},
+                    "aggs": {
+                        "model_input_tokens": {
+                            "sum": {"field": usage + "input_tokens"},
+                        },
+                        "model_output_tokens": {
+                            "sum": {"field": usage + "output_tokens"},
+                        },
+                        "model_credits": {"sum": {"field": usage + "credits"}},
+                        "model_messages": {
+                            "value_count": {"field": prefix + "chat.userId"},
+                        },
+                    },
+                },
+            },
+        }}
+
+        resp = await self._es.search(
+            index=self._chat_index, query=query, aggs=aggs, size=0,
+        )
+        out: list[UserUsage] = []
+        users = dict(resp).get("aggregations", {}).get("users", {})
+        for bucket in users.get("buckets", []):
+            if not isinstance(bucket, dict):
+                continue
+            user_id = bucket.get("key")
+            out.append(UserUsage(
+                userId=user_id if isinstance(user_id, str) else "",
+                totalInputTokens=_agg_int(bucket, "total_input_tokens"),
+                totalOutputTokens=_agg_int(bucket, "total_output_tokens"),
+                totalCredits=_agg_int(bucket, "total_credits"),
+                totalMessages=_agg_int(bucket, "total_messages"),
+                totalSessions=_agg_int(bucket, "total_sessions"),
+                modelUsage=_parse_model_usage(bucket),
+            ))
+        return out
 
     async def delete_session(self, session_id: str) -> None:
         """Port of ``DeleteSession`` (elasticassistantstore.go:1061).
