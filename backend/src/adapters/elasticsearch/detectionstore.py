@@ -4,7 +4,9 @@ Ports the detection-side of ``server/modules/elastic/elasticdetectionstore.go``
 (``validateDetection``, ``prepareForSave``, ``save``/``get``/``getAll``,
 ``CreateDetection``/``GetDetection``/``GetDetectionByPublicId``/
 ``UpdateDetection``/``DeleteDetection``/``GetDetectionHistory``,
-``DoesTemplateExist``).
+``DoesTemplateExist``) and the detection-comment side (``validateComment``,
+``CreateComment``/``GetComment``/``GetComments``/``UpdateComment``/
+``DeleteComment``).
 
 Like the casestore, the store builds a ``{<prefix>detection: <det>, <prefix>kind:
 "detection", '@timestamp': now}`` document, indexes it with ``refresh="true"``
@@ -68,7 +70,8 @@ from src.adapters.elasticsearch.store_base import (
     delete_with_audit,
     save_with_audit,
 )
-from src.domain.detection import Detection
+from src.domain.case import Auditable
+from src.domain.detection import Detection, DetectionComment
 from src.domain.event import EventSearchCriteria
 
 logger = logging.getLogger(__name__)
@@ -195,7 +198,7 @@ class ElasticDetectionstore:
     # save / get / get_all (Go save/get/getAll)
     # ------------------------------------------------------------------
 
-    def _prepare_for_save(self, obj: Detection, *, keep_id: bool = False) -> str:
+    def _prepare_for_save(self, obj: Auditable, *, keep_id: bool = False) -> str:
         """Port of ``prepareForSave`` (elasticdetectionstore.go:513).
 
         Stamps the requestor id, then strips the ``update_time`` (and, unless an
@@ -213,7 +216,7 @@ class ElasticDetectionstore:
 
     async def _save(
         self,
-        obj: Detection,
+        obj: Auditable,
         kind: str,
         doc_id: str,
         *,
@@ -239,7 +242,7 @@ class ElasticDetectionstore:
         )
         return result.document_id
 
-    async def _delete(self, obj: Detection, kind: str, doc_id: str) -> None:
+    async def _delete(self, obj: Auditable, kind: str, doc_id: str) -> None:
         """Port of ``deleteDocument`` (elasticdetectionstore.go:251).
 
         Deletes the live document then writes a ``delete`` audit snapshot via the
@@ -435,3 +438,113 @@ class ElasticDetectionstore:
         except NotFoundError:
             return False
         return True
+
+    # ------------------------------------------------------------------
+    # detection comments (Go validateComment / Create/Get/GetComments/
+    # Update/DeleteComment) — Task 17
+    # ------------------------------------------------------------------
+
+    def validate_comment(self, comment: DetectionComment) -> str | None:
+        """Port of ``validateComment`` (elasticdetectionstore.go:1098).
+
+        Returns the first validation error string, or ``None`` when valid. The
+        check order matches Go exactly so the pinned error strings line up:
+        commentId -> detectionId -> userId -> kind -> operation -> value. Both
+        ``id`` and ``detectionId`` use ``validate_id`` (5-50 chars, not the
+        public-id validator), and ``value`` is always required (min 1).
+        """
+        if comment.id != "":
+            err = validate_id(comment.id, "commentId")
+            if err:
+                return err
+        if comment.detection_id != "":
+            err = validate_id(comment.detection_id, "detectionId")
+            if err:
+                return err
+        if comment.user_id != "":
+            err = validate_id(comment.user_id, "userId")
+            if err:
+                return err
+        if comment.kind:
+            return "Field 'Kind' must not be specified"
+        if comment.operation:
+            return "Field 'Operation' must not be specified"
+        return validate_string_required(comment.value, 1, LONG_STRING_MAX, "value")
+
+    async def create_comment(self, comment: DetectionComment) -> DetectionComment:
+        """Port of ``CreateComment`` (elasticdetectionstore.go:1123).
+
+        Validates, rejects a supplied id (Go's verbatim "...new comment"),
+        requires a detection id, confirms the parent detection exists, stamps the
+        create time, saves (live + audit), and reads the comment back.
+        """
+        err = self.validate_comment(comment)
+        if err:
+            raise RuntimeError(err)
+        if comment.id != "":
+            raise RuntimeError("Unexpected ID found in new comment")
+        if comment.detection_id == "":
+            raise RuntimeError("Missing Detection ID in new comment")
+        # Confirm the parent detection exists (raises "Object not found").
+        await self.get_detection(comment.detection_id)
+        comment.create_time = datetime.now(UTC)
+        doc_id = await self._save(
+            comment, "detectioncomment", self._prepare_for_save(comment),
+        )
+        return await self.get_comment(doc_id)
+
+    async def get_comment(self, comment_id: str) -> DetectionComment:
+        """Port of ``GetComment`` (elasticdetectionstore.go:1154)."""
+        err = validate_id(comment_id, "commentId")
+        if err:
+            raise RuntimeError(err)
+        obj = await self._get(comment_id, "detectioncomment")
+        if not isinstance(obj, DetectionComment):
+            raise RuntimeError("Object not found")
+        return obj
+
+    async def get_comments(self, detection_id: str) -> list[DetectionComment]:
+        """Port of ``GetComments`` (elasticdetectionstore.go:1170).
+
+        Searches the live index for every comment carrying this detection id,
+        ordered by ``so_detectioncomment.createTime`` ascending. The detection id
+        is validated with ``validate_id``.
+        """
+        err = validate_id(detection_id, "detectionId")
+        if err:
+            raise RuntimeError(err)
+        prefix = self._prefix
+        query = (
+            f'_index:"{self._index}" AND {prefix}kind:"detectioncomment" AND '
+            f'{prefix}detectioncomment.detectionId:"{escape_lucene(detection_id)}" '
+            f"| sortby {prefix}detectioncomment.createTime^"
+        )
+        objects = await self._get_all(query, self._max_associations)
+        return [o for o in objects if isinstance(o, DetectionComment)]
+
+    async def update_comment(self, comment: DetectionComment) -> DetectionComment:
+        """Port of ``UpdateComment`` (elasticdetectionstore.go:1191).
+
+        Validates, requires an id (``"Missing comment ID"``), preserves the
+        read-only create time from the stored comment, saves, then reads back.
+        """
+        err = self.validate_comment(comment)
+        if err:
+            raise RuntimeError(err)
+        if comment.id == "":
+            raise RuntimeError("Missing comment ID")
+        old = await self.get_comment(comment.id)
+        comment.create_time = old.create_time  # preserve read-only field
+        doc_id = await self._save(
+            comment, "detectioncomment", self._prepare_for_save(comment),
+        )
+        return await self.get_comment(doc_id)
+
+    async def delete_comment(self, comment_id: str) -> None:
+        """Port of ``DeleteComment`` (elasticdetectionstore.go:1218).
+
+        Reads the comment (raising if absent), deletes the live document, and
+        writes a ``delete`` audit snapshot.
+        """
+        comment = await self.get_comment(comment_id)
+        await self._delete(comment, "detectioncomment", comment_id)
