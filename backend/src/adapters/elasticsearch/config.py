@@ -26,6 +26,12 @@ class ElasticConfig(BaseModel):
     case_index: str = "*:so-case"
     audit_index: str = "*:so-casehistory"
     max_case_associations: int = 1000
+    # Per-case cap on related events attached in a single bulk escalate, ported
+    # from Go's ``ClientParams.AlertingParams.MaxBulkEscalateEvents`` — a config
+    # value distinct from ``max_case_associations``. Go's elasticcasestore_test
+    # exercises this with 100; this is the production-configured frontend cap,
+    # not the 1000-default association limit.
+    max_bulk_escalate_events: int = 100
     schema_prefix: str = "so_"
     detection_index: str = "*:so-detection"
     detection_audit_index: str = "*:so-detectionhistory"
