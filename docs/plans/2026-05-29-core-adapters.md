@@ -10,6 +10,19 @@
 
 ---
 
+## Tracked Deferrals (surfaced during implementation review)
+
+These are known gaps left out of the Tier 0/Tier 1 scope, to be addressed alongside Task 8 or a follow-up:
+
+- **FileDatastore: no job reload on startup.** `FileDatastore.__init__` does not walk `job_dir` to load existing `*.json` files (Go's `loadJobs` does, including reconciling `nextJobId = max(id)+1`). Consequence: after a restart `_jobs_by_id` is empty and `_next_job_id` resets to 1001, so new jobs overwrite prior files. Acceptable for dev/Tier 0; implement `loadJobs`-equivalent before relying on persistence across restarts.
+- **FileDatastore: `get_jobs` filtering divergence.** When `kind == ""` the Python returns all non-deleted jobs; Go defaults empty kind to `DEFAULT_JOB_KIND` and also applies nested `parameters` matching (`filterParameterMatches`). The `parameters` arg is currently ignored. Restore Go semantics when packet/job-filtering endpoints need it.
+- **NodeService not wired** in `create_app` — FileDatastore doesn't satisfy `NodeDatastore` (needs async `update_node -> Node` + `get_next_job`). Wire when the agent check-in loop is implemented.
+- **AdminUserstore is a raising stub** (`_UnconfiguredAdminUserstore`) — user *write* endpoints (create/update/delete/role/toggle/sync) raise until a real admin adapter (e.g. Kratos admin) lands. GET /users/ works.
+- **`ensure_default_role_for_user` is a no-op** on StaticRBAC — needs request-context + AdminUserstore wiring (incl. skip-client + call-count semantics from the Go tests).
+- **Authorizer not wired** — `StaticRbacAuthorizer` implements the `Authorizer` protocol but `create_app` only wires it as `Rolestore`; route-level `CheckAuthorized` enforcement (e.g. `playbook_routes.get_authorizer`) remains stubbed pending the broader ES/feature work.
+
+---
+
 ## Task 1: App Configuration Module
 
 Create a Pydantic settings module that loads `sensoroni.json` and provides typed config to adapters.
