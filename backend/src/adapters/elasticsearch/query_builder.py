@@ -15,7 +15,13 @@ from typing import Any
 
 from src.adapters.elasticsearch.field_caps import FieldDefinition, map_elastic_field
 from src.domain.event import EventSearchCriteria, EventUpdateCriteria
-from src.domain.query import SEGMENT_KIND_SEARCH, SEGMENT_KIND_SORT_BY, BaseSegment, Query
+from src.domain.query import (
+    SEGMENT_KIND_GROUP_BY,
+    SEGMENT_KIND_SEARCH,
+    SEGMENT_KIND_SORT_BY,
+    BaseSegment,
+    Query,
+)
 
 
 def format_search(value: str) -> str:
@@ -177,11 +183,86 @@ def _sort_from_criteria(
     return sort_map if sort_map else None
 
 
+def make_timeline(interval: str) -> dict[str, Any]:
+    """Build a ``date_histogram`` timeline aggregation (Go ``makeTimeline``)."""
+    return {
+        "date_histogram": {
+            "field": "@timestamp",
+            "fixed_interval": interval,
+            "min_doc_count": 1,
+        }
+    }
+
+
+def make_aggregation(
+    defs: dict[str, FieldDefinition],
+    prefix: str,
+    keys: list[str],
+    count: int,
+    *,
+    ascending: bool,
+) -> tuple[dict[str, Any], str]:
+    """Build a (possibly nested) ``terms`` aggregation (Go ``makeAggregation``).
+
+    The first key drives this level's ``terms``; a trailing ``*`` enables the
+    ``__missing__`` bucket (and is stripped before field mapping). Remaining keys
+    recurse into nested ``aggs`` keyed by the running ``prefix|field|...`` name.
+    Returns ``(agg, name)`` where ``name`` is this level's running key.
+
+    ``keys`` is copied so the caller's list is never mutated (Go's slice is a
+    distinct ``RawFields()`` copy; we mirror that to be safe).
+    """
+    keys = list(keys)
+    order = {"_count": "asc" if ascending else "desc"}
+    agg_fields: dict[str, Any] = {}
+    first = keys[0]
+    if first.endswith("*"):
+        first = first[:-1]
+        keys[0] = first
+        agg_fields["missing"] = "__missing__"
+    agg_fields["field"] = map_elastic_field(defs, first)
+    agg_fields["size"] = count
+    agg_fields["order"] = order
+
+    agg: dict[str, Any] = {"terms": agg_fields}
+    name = f"{prefix}|{first}"
+    if len(keys) > 1:
+        inner_agg, inner_name = make_aggregation(
+            defs, name, keys[1:], count, ascending=ascending,
+        )
+        agg["aggs"] = {inner_name: inner_agg}
+    return agg, name
+
+
 def _build_aggregations(
-    defs: dict[str, FieldDefinition], criteria: EventSearchCriteria,
+    defs: dict[str, FieldDefinition], intervals: int, criteria: EventSearchCriteria,
 ) -> dict[str, Any]:
-    """Placeholder replaced in Task 7 (terms/timeline/bottom aggregations)."""
-    return {}
+    """Build the timeline/terms/bottom aggregations (Go ``convertToElasticRequest``).
+
+    Mirrors Go: a ``timeline`` date-histogram is added only when ``end_time`` is
+    non-zero; each ``groupby`` segment (after stripping ``-`` options) yields a
+    ``groupby_<idx>|...`` nested terms aggregation; the first non-empty groupby
+    also seeds a single ascending ``bottom`` aggregation from its first field.
+    """
+    aggs: dict[str, Any] = {}
+    if criteria.end_time is not None and criteria.begin_time is not None:
+        interval = calc_timeline_interval(intervals, criteria.begin_time, criteria.end_time)
+        aggs["timeline"] = make_timeline(interval)
+    for idx, segment in enumerate(criteria.parsed_query.named_segments(SEGMENT_KIND_GROUP_BY)):
+        fields = strip_segment_options(segment.raw_fields())
+        if not fields:
+            continue
+        prefix = f"groupby_{idx}"
+        agg, name = make_aggregation(defs, prefix, fields, criteria.metric_limit, ascending=False)
+        aggs[name] = agg
+        if "bottom" not in aggs:
+            # Go uses an empty prefix for bottom; with a single field no inner
+            # aggs are created, so the discarded name is irrelevant to output.
+            bottom, _ = make_aggregation(
+                defs, "", fields[:1], criteria.metric_limit, ascending=True,
+            )
+            aggs["bottom"] = bottom
+    return aggs
 
 
 def build_search_request(
@@ -202,7 +283,7 @@ def build_search_request(
     if criteria.search_after:
         body["search_after"] = criteria.search_after
     if criteria.metric_limit > 0:
-        aggs = _build_aggregations(defs, criteria)
+        aggs = _build_aggregations(defs, intervals, criteria)
         if aggs:
             body["aggs"] = aggs
     sort = _sort_from_criteria(criteria.parsed_query, criteria.sort_fields)
