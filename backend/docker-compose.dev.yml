@@ -1,0 +1,32 @@
+# Single-node Elasticsearch for local development + adapter integration tests.
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml up -d
+#   # wait for health, then:
+#   .venv/bin/python -m pytest tests/adapters/elasticsearch/integration -v
+#   docker compose -f docker-compose.dev.yml down -v
+#
+# Security is disabled and the node is single-node so the integration tests can
+# talk plain HTTP on localhost:9200 (override with ES_TEST_URL). Do NOT use this
+# configuration in production.
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    container_name: so-dev-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
