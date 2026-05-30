@@ -91,12 +91,21 @@ class SaltAdminUserstore:
         args["firstName"] = user.first_name
         args["lastName"] = user.last_name
         args["note"] = user.note
-        # The User domain model has no password field (extra inputs are dropped
-        # by Pydantic); Go reads user.Password, so fall back to "" when absent.
+        # KNOWN GAP: the User domain model has no `password` field yet, and
+        # Pydantic (extra="ignore") drops any incoming password, so this getattr
+        # always yields "" — add_user therefore always relays password="". Go
+        # reads user.Password; the getattr is kept so a future User.password
+        # field (or model/route that carries a real password) is picked up
+        # transparently without touching this adapter.
         args["password"] = getattr(user, "password", "")
-        await self._manage_user(args)
-        # Go calls Rolestore.Reload() after AddUser.
-        self._rolestore.scan_now()
+        # Go calls Rolestore.Reload() AFTER err is set and BEFORE return
+        # (saltstore.go:1277) — i.e. it reloads even when output=="false" or
+        # the relay itself errored. Mirror that with finally so scan_now runs on
+        # success, on the SaltManageUserError path, and on SaltRelayDown.
+        try:
+            await self._manage_user(args)
+        finally:
+            self._rolestore.scan_now()
 
     async def delete_user(self, user_id: str) -> None:
         await self._manage_user(
@@ -150,28 +159,32 @@ class SaltAdminUserstore:
     async def add_role(self, user_id: str, role: str, bypass_auth_check: bool = False) -> None:
         # bypass_auth_check matches the AdminUserstore protocol signature; the
         # adapter performs no authorization, so it has no behavioral effect here.
-        await self._manage_user(
-            {
-                "command": "manage-user",
-                "operation": "addrole",
-                "email": await self._lookup_email_from_id(user_id),
-                "role": role,
-            }
-        )
-        # Go calls Rolestore.Reload() after AddRole.
-        self._rolestore.scan_now()
+        args = {
+            "command": "manage-user",
+            "operation": "addrole",
+            "email": await self._lookup_email_from_id(user_id),
+            "role": role,
+        }
+        # Go reloads after err is set, before return (saltstore.go:1403): reload
+        # even when output=="false" or the relay errored — mirror with finally.
+        try:
+            await self._manage_user(args)
+        finally:
+            self._rolestore.scan_now()
 
     async def delete_role(self, user_id: str, role: str) -> None:
-        await self._manage_user(
-            {
-                "command": "manage-user",
-                "operation": "delrole",
-                "email": await self._lookup_email_from_id(user_id),
-                "role": role,
-            }
-        )
-        # Go calls Rolestore.Reload() after DeleteRole (saltstore.go:1425).
-        self._rolestore.scan_now()
+        args = {
+            "command": "manage-user",
+            "operation": "delrole",
+            "email": await self._lookup_email_from_id(user_id),
+            "role": role,
+        }
+        # Go reloads after err is set, before return (saltstore.go:1425): reload
+        # even when output=="false" or the relay errored — mirror with finally.
+        try:
+            await self._manage_user(args)
+        finally:
+            self._rolestore.scan_now()
 
     async def sync_users(self) -> None:
         await self._manage_user({"command": "manage-user", "operation": "sync"})

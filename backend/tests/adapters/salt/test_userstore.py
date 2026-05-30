@@ -118,6 +118,14 @@ class TestAddUser:
         with pytest.raises(SaltManageUserError):
             await store.add_user(User(email=_KNOWN_EMAIL))
 
+    async def test_reloads_even_when_relay_returns_false(self):
+        # Go reloads the role map after AddUser regardless of the error
+        # (saltstore.go:1277 runs after err is set, before return).
+        store, _relay, _us, rolestore = _make_store({"manage-user": "false"}, None)
+        with pytest.raises(SaltManageUserError):
+            await store.add_user(User(email=_KNOWN_EMAIL))
+        assert rolestore.scan_now_calls == 1
+
 
 class TestDeleteUser:
     async def test_uses_looked_up_email(self):
@@ -137,6 +145,13 @@ class TestDeleteUser:
         store, _relay, _us, _rs = _make_store({"manage-user": "false"}, _known_user())
         with pytest.raises(SaltManageUserError):
             await store.delete_user(_KNOWN_ID)
+
+    async def test_does_not_reload_on_failure(self):
+        # Go's DeleteUser never calls Rolestore.Reload().
+        store, _relay, _us, rolestore = _make_store({"manage-user": "false"}, _known_user())
+        with pytest.raises(SaltManageUserError):
+            await store.delete_user(_KNOWN_ID)
+        assert rolestore.scan_now_calls == 0
 
 
 class TestUpdateProfile:
@@ -248,6 +263,13 @@ class TestAddRole:
         with pytest.raises(SaltManageUserError):
             await store.add_role(_KNOWN_ID, "analyst")
 
+    async def test_reloads_even_when_relay_returns_false(self):
+        # Go reloads after AddRole regardless of the error (saltstore.go:1403).
+        store, _relay, _us, rolestore = _make_store({"manage-user": "false"}, _known_user())
+        with pytest.raises(SaltManageUserError):
+            await store.add_role(_KNOWN_ID, "analyst")
+        assert rolestore.scan_now_calls == 1
+
 
 class TestDeleteRole:
     async def test_sends_delrole_args_and_reloads(self):
@@ -269,6 +291,13 @@ class TestDeleteRole:
         store, _relay, _us, _rs = _make_store({"manage-user": "false"}, _known_user())
         with pytest.raises(SaltManageUserError):
             await store.delete_role(_KNOWN_ID, "analyst")
+
+    async def test_reloads_even_when_relay_returns_false(self):
+        # Go reloads after DeleteRole regardless of the error (saltstore.go:1425).
+        store, _relay, _us, rolestore = _make_store({"manage-user": "false"}, _known_user())
+        with pytest.raises(SaltManageUserError):
+            await store.delete_role(_KNOWN_ID, "analyst")
+        assert rolestore.scan_now_calls == 1
 
 
 class TestSyncUsers:
