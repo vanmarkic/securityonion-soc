@@ -112,11 +112,21 @@ class TestAlignTypeScalar:
         with pytest.raises(ValueError, match=r'strconv\.ParseFloat: parsing "not a float": invalid syntax'):
             align_type(3.5, "not a float")
 
-    def test_str_old_keeps_string(self):
-        # AlignNonStringType: old="my_str", new="123" stays the string "123".
-        result = align_type("my_str", "123")
-        assert result == "123"
+    def test_str_old_routes_to_best_guess(self):
+        # Go's alignType has NO `case string`; a str oldValue falls through to the
+        # trailing `return alignBestGuess(newValue)`. So a non-numeric string stays
+        # a string...
+        result = align_type("my_str", "stays string")
+        assert result == "stays string"
         assert isinstance(result, str)
+
+    def test_str_old_numeric_input_best_guesses_to_int(self):
+        # ...but a numeric-looking new value best-guesses to int (Go int64), since
+        # there is no string short-circuit. (Read-back via render_scalar still
+        # stringifies to "123", so AlignNonStringType's assertion holds.)
+        result = align_type("my_str", "123")
+        assert result == 123
+        assert isinstance(result, int)
 
     def test_none_old_uses_best_guess(self):
         # nil old value -> alignBestGuess.

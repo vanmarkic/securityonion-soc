@@ -109,8 +109,11 @@ def align_type(old_value: Any, new_value: str) -> Any:
       * ``bool`` old  -> :func:`parse_bool`
       * ``int`` old   -> :func:`parse_int`
       * ``float`` old -> :func:`parse_float`
-      * ``str`` old   -> ``new_value`` unchanged
-      * ``None`` old  -> :func:`align_best_guess`
+
+    Go's alignType has NO ``case string``; a ``str`` (or ``None``, or any other
+    unhandled scalar) ``old_value`` falls through to the trailing
+    ``return alignBestGuess(newValue)``, so we route those to
+    :func:`align_best_guess` (e.g. a numeric-looking string becomes an int).
 
     List dispatch (``list`` old) is deferred to the next unit (``# B2:``).
 
@@ -125,9 +128,8 @@ def align_type(old_value: Any, new_value: str) -> Any:
             return parse_int(new_value)
         if isinstance(old_value, float):
             return parse_float(new_value)
-        if isinstance(old_value, str):
-            return new_value
         if isinstance(old_value, list):
             # B2: list align ([]int/[]bool/[]float/[][]/[]{} + alignBestGuessList).
             raise NotImplementedError("# B2: list align")
+    # str / None / any unhandled scalar -> Go's trailing alignBestGuess(newValue).
     return align_best_guess(new_value)

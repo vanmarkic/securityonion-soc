@@ -34,11 +34,11 @@ def validate_yaml(value: str) -> None:
 def validate_json(value: str) -> None:
     """Validate ``value`` as JSON (mirror syntax/json.go ValidateJson).
 
-    An empty string is valid (Go's json.LoadJson on empty input into an
-    ``interface{}`` does not error). A parse failure raises ``ERROR_MALFORMED_JSON``.
+    Go's ValidateJson runs ``json.Unmarshal([]byte(value), &mapped)``; on an EMPTY
+    string that errors ("unexpected end of JSON input"), so empty JSON is INVALID
+    (unlike empty YAML, which parses to ``nil`` and is valid). Any parse failure —
+    including the empty string — raises ``ERROR_MALFORMED_JSON``.
     """
-    if value == "":
-        return
     try:
         json.loads(value)
     except (ValueError, TypeError) as err:

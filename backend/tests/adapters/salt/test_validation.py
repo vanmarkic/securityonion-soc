@@ -68,8 +68,16 @@ class TestValidateJson:
         with pytest.raises(ValueError, match="^ERROR_MALFORMED_JSON$"):
             validate("invalid vaue", syntax)
 
-    def test_empty_json_is_valid(self):
-        validate_json("")
+    def test_empty_json_is_invalid(self):
+        # Go's ValidateJson runs json.Unmarshal on the empty string, which errors
+        # ("unexpected end of JSON input") -> ERROR_MALFORMED_JSON. Empty JSON is
+        # INVALID, unlike empty YAML (which parses to nil and is valid).
+        with pytest.raises(ValueError, match="^ERROR_MALFORMED_JSON$"):
+            validate_json("")
+
+    def test_empty_json_invalid_via_validate(self):
+        with pytest.raises(ValueError, match="^ERROR_MALFORMED_JSON$"):
+            validate("", "json")
 
     def test_validate_json_helper_raises(self):
         with pytest.raises(ValueError, match="^ERROR_MALFORMED_JSON$"):
