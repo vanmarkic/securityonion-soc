@@ -448,7 +448,7 @@ class TestGetSettingsFullReadPath:
         assert "myapp.ro" in ids
 
 
-class TestUnimplementedWriteMethods:
+class TestWriteMethodGuards:
     async def test_update_setting_rejects_empty_id(self, tmp_path: Path):
         # update_setting is implemented now (see test_configstore_write.py); an
         # empty id is still rejected before any I/O.
@@ -456,12 +456,14 @@ class TestUnimplementedWriteMethods:
         with pytest.raises(ValueError, match="Invalid setting id"):
             await store.update_setting(Setting(id=""), remove=False)
 
-    async def test_sync_settings_not_implemented(self, tmp_path: Path):
+    async def test_sync_settings_requires_relay(self, tmp_path: Path):
+        # sync_settings is implemented now (see test_configstore_write.py); with
+        # no relay wired it raises a clear error rather than NotImplementedError.
         store = SaltConfigstore(str(tmp_path))
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(RuntimeError, match="no relay configured"):
             await store.sync_settings()
 
-    async def test_sync_module_not_implemented(self, tmp_path: Path):
+    async def test_sync_module_requires_relay(self, tmp_path: Path):
         store = SaltConfigstore(str(tmp_path))
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(RuntimeError, match="no relay configured"):
             await store.sync_module("mod", force=False)

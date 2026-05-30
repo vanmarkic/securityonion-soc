@@ -23,13 +23,22 @@ from __future__ import annotations
 
 import logging
 import os
+import re
+import uuid
+from itertools import count
 from pathlib import Path
 from typing import Any
 
 import yaml  # type: ignore[import-untyped]
 
-from src.adapters.salt.coercion import align_best_guess, align_type
+from src.adapters.salt.coercion import (
+    align_best_guess,
+    align_type,
+    coerce_map_list_field_types,
+    force_type,
+)
 from src.adapters.salt.jinja import escape_jinja
+from src.adapters.salt.relay import SaltRelayClient
 from src.adapters.salt.settings import (
     filter_settings,
     parse_advanced,
@@ -45,14 +54,54 @@ from src.domain.config import Setting
 
 logger = logging.getLogger(__name__)
 
+# Go raises errors.New("ERROR_SALT_STATE") when a manage-salt highstate/state
+# relay returns the literal "false".
+ERROR_SALT_STATE = "ERROR_SALT_STATE"
+
+# Go's SyncModule treats a relayed output matching this pattern as an error code
+# to surface verbatim (e.g. "ERROR_FAILED_SALT_VALIDATION").
+_SALT_ERROR_RE = re.compile(r"^ERROR_[A-Z_]+$")
+
+
+class SaltStateError(Exception):
+    """Raised when a manage-salt sync command fails (output == "false")."""
+
+    def __init__(self, message: str = ERROR_SALT_STATE) -> None:
+        super().__init__(message)
+
 
 class SaltConfigstore:
-    """Read settings from (and, later, write them to) the saltstack tree."""
+    """Read settings from (and write them to) the saltstack tree.
 
-    def __init__(self, saltstack_dir: str, bypass_errors: bool = False) -> None:
+    Sync operations (highstate / state) reach SaltStack via the file-based relay,
+    mirroring the command_id seam used by ``SaltGridMembersstore`` /
+    ``SaltAdminUserstore``: an optional ``request_id`` (the route/service layer
+    will supply a real one later) with a per-call counter so concurrent commands
+    never collide on the relay's file-queue keys. The relay is optional because
+    the read/write disk path does not need it; ``sync_*`` raise a clear error when
+    no relay was wired.
+    """
+
+    def __init__(
+        self,
+        saltstack_dir: str,
+        bypass_errors: bool = False,
+        *,
+        relay: SaltRelayClient | None = None,
+        request_id: str | None = None,
+    ) -> None:
         # Mirror Go Init: strip a single trailing slash from the configured dir.
         self.saltstack_dir = saltstack_dir.rstrip("/")
         self.bypass_errors = bypass_errors
+        self._relay = relay
+        self._request_id = request_id or uuid.uuid4().hex
+        self._counter = count()
+
+    def _command_id(self, command: str) -> str:
+        suffix = next(self._counter)
+        if suffix == 0:
+            return f"{self._request_id}_{command}"
+        return f"{self._request_id}-{suffix}_{command}"
 
     async def get_settings(self, advanced: bool) -> list[Setting]:
         settings: list[Setting] = []
@@ -306,12 +355,45 @@ class SaltConfigstore:
         os.chmod(path, 0o600)
 
     async def sync_settings(self) -> None:
-        # TODO(next unit): port saltstore.SyncSettings.
-        raise NotImplementedError
+        """Trigger a Salt highstate across all minions (port SyncSettings).
+
+        Relays ``{command: manage-salt, operation: highstate, minion: *}``; a
+        relayed ``"false"`` surfaces as :class:`SaltStateError` (Go's
+        ERROR_SALT_STATE). Go's CheckAuthorized is enforced at the service/route
+        layer, not here.
+        """
+        output = await self._relay_command(
+            "manage-salt",
+            {"command": "manage-salt", "operation": "highstate", "minion": "*"},
+        )
+        if output == "false":
+            raise SaltStateError
 
     async def sync_module(self, module: str, force: bool) -> None:
-        # TODO(next unit): port saltstore.SyncModule.
-        raise NotImplementedError
+        """Apply a single Salt state/module (port SyncModule).
+
+        Relays ``{command: manage-salt, operation: state, state: <module>}``,
+        adding ``async: "true"`` only when ``force`` is set (the Python port's
+        ``force`` maps to Go's ``async``). A relayed output matching
+        ``^ERROR_[A-Z_]+$`` is raised verbatim; a plain ``"false"`` surfaces as
+        :class:`SaltStateError` (ERROR_SALT_STATE).
+        """
+        args = {"command": "manage-salt", "operation": "state", "state": module}
+        if force:
+            args["async"] = "true"
+        output = await self._relay_command("manage-salt", args)
+        if _SALT_ERROR_RE.match(output):
+            raise SaltStateError(output)
+        if output == "false":
+            raise SaltStateError
+
+    async def _relay_command(self, command: str, args: dict[str, str]) -> str:
+        """Send a relay command, requiring a wired relay (clear error otherwise)."""
+        if self._relay is None:
+            raise RuntimeError(
+                "SaltConfigstore has no relay configured; cannot reach SaltStack"
+            )
+        return await self._relay.exec_command(self._command_id(command), args)
 
 
 def update_setting_yaml(
@@ -344,12 +426,24 @@ def update_setting_yaml(
     if len(sections) == 1:
         value = setting.value
         if setting.forced_type != "":
-            # B2: forced_type coercion (force_type + coerce_map_list_field_types).
-            raise NotImplementedError("# B2: forced_type")
+            result = force_type(value, setting.forced_type)
+            if setting.forced_type == "[]{}" and _is_list_of_dict(result):
+                result = coerce_map_list_field_types(result, setting.ui_elements)
+            mapped[name] = result
+            return
         current_value = mapped.get(name)
         if current_value is None and setting.default_available:
             current_value = align_best_guess(setting.default)
         mapped[name] = align_type(current_value, value.strip())
+
+
+def _is_list_of_dict(value: Any) -> bool:
+    """Whether ``value`` is a (possibly empty) list whose items are all dicts.
+
+    A ``[]{}`` forcedType coerces to a list-of-map (via ``align_map_list``); only
+    then do the per-field UI-element type coercions apply.
+    """
+    return isinstance(value, list) and all(isinstance(item, dict) for item in value)
 
 
 def delete_setting_yaml(mapped: dict[str, Any], sections: list[str]) -> bool:
