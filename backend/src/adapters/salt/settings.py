@@ -204,7 +204,9 @@ def read_file(path: str) -> str:
 def rel_path_from_id(setting_id: str) -> str:
     """Map a setting id to a salt file relative path (mirror relPathFromId).
 
-    Example: ``soc.files.soc.banner_md`` -> ``soc/files/soc/banner.md``.
+    Only a DOUBLE underscore (``__``) becomes a dot; a single underscore is left
+    alone. Example: ``soc.files.soc.banner__md`` -> ``soc/files/soc/banner.md``
+    (and ``myapp.foo__txt`` -> ``myapp/foo.txt``).
     """
     relpath = setting_id.replace(".", "/")
     relpath = relpath.replace("__", ".")

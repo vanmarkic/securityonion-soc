@@ -16,8 +16,10 @@ from src.adapters.salt.settings import (
     parse_advanced,
     parse_yaml,
     post_process,
+    read_file,
     recursively_parse_annotations,
     recursively_parse_settings,
+    rel_path_from_id,
     render_scalar,
     sort_settings,
     update_setting_with_annotation,
@@ -464,3 +466,35 @@ class TestParseAdvanced:
     def test_missing_file_is_swallowed(self, tmp_path: Path):
         out = parse_advanced(str(tmp_path / "missing.sls"), [], "", "advanced")
         assert out == []
+
+
+class TestRelPathFromId:
+    @pytest.mark.parametrize(
+        ("setting_id", "expected"),
+        [
+            # Double underscore -> dot (the file-annotation case).
+            ("myapp.foo__txt", "myapp/foo.txt"),
+            ("soc.files.soc.banner__md", "soc/files/soc/banner.md"),
+            # Plain dotted id: dots -> slashes, single underscore untouched.
+            ("myapp.int", "myapp/int"),
+            ("a_b.c_d", "a_b/c_d"),
+            # The "..".->"____" shenanigan branch: four underscores become "__"
+            # ->"__" (i.e. "..") after step 2, then ".."->"____" restores them.
+            ("myapp____txt", "myapp____txt"),
+            ("a__b__c", "a.b.c"),
+        ],
+    )
+    def test_matches_go_rel_path_from_id(self, setting_id: str, expected: str):
+        # Verified byte-for-byte against server/modules/salt/saltstore.go:565-572.
+        assert rel_path_from_id(setting_id) == expected
+
+
+class TestReadFile:
+    def test_reads_contents(self, tmp_path: Path):
+        f = tmp_path / "f.txt"
+        f.write_text("hello")
+        assert read_file(str(f)) == "hello"
+
+    def test_missing_file_raises(self, tmp_path: Path):
+        with pytest.raises(OSError):
+            read_file(str(tmp_path / "nope.txt"))
