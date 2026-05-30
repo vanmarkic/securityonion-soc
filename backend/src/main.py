@@ -63,6 +63,7 @@ from src.services.events_service import EventsService
 from src.services.grid_service import GridService
 from src.services.info_service import InfoService
 from src.services.job_service import JobService
+from src.services.node_service import NodeService
 from src.services.roles_service import RolesService
 from src.services.users_service import UsersService
 
@@ -188,7 +189,11 @@ def create_app(config_path: str | None = None) -> FastAPI:
     cfg = load_config(config_path) if config_path else AppConfig()
 
     auth = StaticKeyAuth(cfg.statickeyauth.api_key, cfg.statickeyauth.anonymous_cidr)
-    datastore = FileDatastore(job_dir=cfg.filedatastore.job_dir)
+    datastore = FileDatastore(
+        job_dir=cfg.filedatastore.job_dir,
+        retry_failure_interval_ms=cfg.filedatastore.retry_failure_interval_ms,
+        retry_failure_max_attempts=cfg.filedatastore.retry_failure_max_attempts,
+    )
 
     # Select the Userstore once and share it across InfoService (force_user_otp
     # lookup) and UsersService — otherwise /api/info/ and /api/users/ would read
@@ -221,8 +226,11 @@ def create_app(config_path: str | None = None) -> FastAPI:
         lambda: GridService(datastore, _NullStatusstore())
     )
 
-    # NodeService wiring deferred: FileDatastore does not satisfy NodeDatastore
-    # (needs async update_node->Node + get_next_job).
+    # Node check-in (POST /api/node/): FileDatastore now satisfies NodeDatastore
+    # (async update_node->Node + get_next_job). Auth for node_routes is wired above.
+    application.dependency_overrides[node_routes.get_node_service] = (
+        lambda: NodeService(datastore)
+    )
 
     # Tier 1: RBAC (Rolestore) + user management.
     rbac = StaticRbacAuthorizer()
