@@ -14,11 +14,17 @@
 | `Eventstore`, `Casestore`, `Detectionstore`, `Assistantstore` | `elasticsearch` | `server/modules/elastic/` |
 | `Authorizer`, `Rolestore` | `staticrbac` | `server/modules/staticrbac/` |
 | `Userstore` (read: list, get-by-id) | `kratos` | `server/modules/kratos/` |
+| `GridMembersstore`, `AdminUserstore` + salt relay | `salt` (PR 1) | `server/modules/salt/` |
 | `InfoProvider`, `Userstore` (dev) | `stub` | — |
 
 Characterization replay (`tests/characterization`) now runs against the wired
 `create_app()` and passes for every endpoint with an active adapter
 (see `docs/characterization-divergences.md`).
+
+**Salt adapter PR 1 (2026-05-30):** the file-queue relay client, `GridMembersstore`,
+and `AdminUserstore` are implemented and wired into `create_app` (gated on a
+`salt` config block). Only **`Configstore`** (the YAML-pillar engine, Phases 3–4
+of `2026-05-30-salt-adapter.md`) remains for PR 2.
 
 ## Correction to `prompt-adapter-planning.md`
 
@@ -55,6 +61,9 @@ Ordered by a rough (value ÷ effort), infra-free first.
    `Configstore` (GetSettings/UpdateSetting/SyncSettings/SyncModule, the large
    YAML/type-coercion engine), `GridMembersstore` (GetMembers/ManageMember), and
    `AdminUserstore` (AddUser/Delete/UpdateProfile/ResetPassword/Enable/Disable).
+   **PR 1 DONE 2026-05-30:** relay client + `GridMembersstore` + `AdminUserstore`
+   implemented, reviewed, and wired. **Remaining (PR 2):** only `Configstore`
+   (Phases 3–4 of `2026-05-30-salt-adapter.md`).
    Needs a SaltStack master + filesystem layout; `execCommand` shells out. High UI
    value (config page, grid members, user management) but the biggest single port
    surface left. Recommend splitting per port and mocking `execCommand` for units.
