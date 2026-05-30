@@ -10,6 +10,9 @@ from src.adapters.elasticsearch.detectionstore import ElasticDetectionstore
 from src.adapters.elasticsearch.eventstore import ElasticEventstore
 from src.adapters.filedatastore.store import FileDatastore
 from src.adapters.kratos.userstore import KratosUserstore
+from src.adapters.salt.gridmembers import SaltGridMembersstore
+from src.adapters.salt.relay import FileQueueRelayClient
+from src.adapters.salt.userstore import SaltAdminUserstore
 from src.adapters.statickeyauth.middleware import StaticKeyAuth
 from src.adapters.staticrbac.authorizer import StaticRbacAuthorizer
 from src.adapters.stub.info_provider import StubInfoProvider
@@ -19,6 +22,7 @@ from src.api import (
     case_routes,
     detection_routes,
     events_routes,
+    gridmembers_routes,
     info_routes,
     job_routes,
     jobs_routes,
@@ -55,12 +59,13 @@ from src.domain.assistant import (
 )
 from src.domain.status import Status
 from src.domain.user import User
-from src.ports.users import Userstore
+from src.ports.users import AdminUserstore, Userstore
 from src.services.assistant_service import AssistantService
 from src.services.case_service import CaseService
 from src.services.detection_service import DetectionService
 from src.services.events_service import EventsService
 from src.services.grid_service import GridService
+from src.services.gridmembers_service import GridMembersService
 from src.services.info_service import InfoService
 from src.services.job_service import JobService
 from src.services.node_service import NodeService
@@ -242,7 +247,29 @@ def create_app(config_path: str | None = None) -> FastAPI:
             default_role=cfg.staticrbac.default_role,
         )
 
-    admin_userstore = _UnconfiguredAdminUserstore()
+    # Salt relay wiring (gated on a `salt` module block). The relay is the
+    # file-based queue seam shared by the GridMembers and AdminUserstore
+    # adapters; constructing FileQueueRelayClient is lazy (it only stores the
+    # queue_dir, no I/O). When salt is absent, gridmembers stays UNWIRED and the
+    # AdminUserstore falls back to the not-configured placeholder (writes raise).
+    admin_userstore: AdminUserstore
+    if cfg.salt is not None:
+        salt_relay = FileQueueRelayClient(
+            cfg.salt.queue_dir, timeout_ms=cfg.salt.timeout_ms
+        )
+        salt_gridmembers = SaltGridMembersstore(salt_relay)
+        # rbac (StaticRbacAuthorizer) supplies scan_now() for the role reload
+        # the AdminUserstore performs after add/role mutations.
+        admin_userstore = SaltAdminUserstore(salt_relay, userstore, rbac)
+
+        application.dependency_overrides[gridmembers_routes.get_request_context_dep] = (
+            auth
+        )
+        application.dependency_overrides[gridmembers_routes.get_gridmembers_service] = (
+            lambda: GridMembersService(salt_gridmembers, rbac)
+        )
+    else:
+        admin_userstore = _UnconfiguredAdminUserstore()
 
     # Note: rbac and userstore are captured once and shared across requests
     # (unlike the per-request Tier 0 service lambdas) — StaticRbac holds parsed

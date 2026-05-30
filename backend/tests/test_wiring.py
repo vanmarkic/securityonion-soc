@@ -358,3 +358,112 @@ class TestElasticsearchWiring:
         async with AsyncClient(transport=transport, base_url="http://test") as c:
             resp = await c.get("/api/health")
             assert resp.status_code == 200
+
+
+def _salt_config(tmp_path: Path) -> str:
+    config = {
+        "server": {
+            "modules": {
+                "statickeyauth": {"apiKey": "k", "anonymousCidr": "*"},
+                "filedatastore": {"jobDir": str(tmp_path / "jobs")},
+                "salt": {
+                    "queueDir": str(tmp_path / "queue"),
+                    "timeoutMs": 5,
+                },
+            }
+        }
+    }
+    path = tmp_path / "sensoroni.json"
+    path.write_text(json.dumps(config))
+    return str(path)
+
+
+class TestSaltWiring:
+    """Salt adapter wiring — no relay I/O.
+
+    These tests inspect the installed dependency-override factories and the
+    adapter types they build; the FileQueueRelayClient construction is lazy
+    (it just stores the queue_dir), so no file-queue access happens here.
+    """
+
+    async def test_create_app_wires_gridmembers_service(self, tmp_path: Path):
+        from src.api import gridmembers_routes
+        from src.main import create_app
+        from src.services.gridmembers_service import GridMembersService
+
+        app = create_app(_salt_config(tmp_path))
+
+        assert gridmembers_routes.get_gridmembers_service in app.dependency_overrides
+        svc = app.dependency_overrides[gridmembers_routes.get_gridmembers_service]()
+        assert isinstance(svc, GridMembersService)
+
+    async def test_create_app_wires_salt_admin_userstore(self, tmp_path: Path):
+        from src.adapters.salt.userstore import SaltAdminUserstore
+        from src.api import users_routes
+        from src.main import create_app
+        from src.services.users_service import UsersService
+
+        app = create_app(_salt_config(tmp_path))
+
+        svc = app.dependency_overrides[users_routes.get_users_service]()
+        assert isinstance(svc, UsersService)
+        assert isinstance(svc._admin_userstore, SaltAdminUserstore)
+
+    async def test_gridmembers_gets_auth_request_context(self, tmp_path: Path):
+        from src.api import gridmembers_routes, info_routes
+        from src.main import create_app
+
+        app = create_app(_salt_config(tmp_path))
+
+        auth = app.dependency_overrides[info_routes.get_request_context_dep]
+        assert (
+            app.dependency_overrides[gridmembers_routes.get_request_context_dep] is auth
+        )
+
+    async def test_no_salt_config_leaves_gridmembers_unwired(self, tmp_path: Path):
+        from src.api import gridmembers_routes
+        from src.main import create_app
+
+        config = {
+            "server": {
+                "modules": {
+                    "statickeyauth": {"apiKey": "k", "anonymousCidr": "*"},
+                    "filedatastore": {"jobDir": str(tmp_path / "jobs")},
+                }
+            }
+        }
+        path = tmp_path / "sensoroni.json"
+        path.write_text(json.dumps(config))
+
+        app = create_app(str(path))
+        assert (
+            gridmembers_routes.get_gridmembers_service not in app.dependency_overrides
+        )
+
+    async def test_no_salt_config_uses_unconfigured_admin_userstore(
+        self, tmp_path: Path
+    ):
+        from src.api import users_routes
+        from src.main import _UnconfiguredAdminUserstore, create_app
+
+        config = {
+            "server": {
+                "modules": {
+                    "statickeyauth": {"apiKey": "k", "anonymousCidr": "*"},
+                    "filedatastore": {"jobDir": str(tmp_path / "jobs")},
+                }
+            }
+        }
+        path = tmp_path / "sensoroni.json"
+        path.write_text(json.dumps(config))
+
+        app = create_app(str(path))
+        svc = app.dependency_overrides[users_routes.get_users_service]()
+        assert isinstance(svc._admin_userstore, _UnconfiguredAdminUserstore)
+
+    async def test_module_level_app_stays_override_free(self, tmp_path: Path):
+        """create_app must never mutate the shared module-level app."""
+        from src.main import app, create_app
+
+        create_app(_salt_config(tmp_path))
+        assert app.dependency_overrides == {}
