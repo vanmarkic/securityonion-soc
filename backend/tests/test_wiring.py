@@ -367,6 +367,7 @@ def _salt_config(tmp_path: Path) -> str:
                 "statickeyauth": {"apiKey": "k", "anonymousCidr": "*"},
                 "filedatastore": {"jobDir": str(tmp_path / "jobs")},
                 "salt": {
+                    "saltstackDir": str(tmp_path / "saltstack"),
                     "queueDir": str(tmp_path / "queue"),
                     "timeoutMs": 5,
                 },
@@ -460,6 +461,48 @@ class TestSaltWiring:
         app = create_app(str(path))
         svc = app.dependency_overrides[users_routes.get_users_service]()
         assert isinstance(svc._admin_userstore, _UnconfiguredAdminUserstore)
+
+    async def test_create_app_wires_config_service(self, tmp_path: Path):
+        from src.adapters.salt.configstore import SaltConfigstore
+        from src.api import config_routes
+        from src.main import create_app
+        from src.services.config_service import ConfigService
+
+        app = create_app(_salt_config(tmp_path))
+
+        assert config_routes.get_config_service in app.dependency_overrides
+        svc = app.dependency_overrides[config_routes.get_config_service]()
+        assert isinstance(svc, ConfigService)
+        assert isinstance(svc._configstore, SaltConfigstore)
+
+    async def test_config_store_reuses_shared_salt_relay(self, tmp_path: Path):
+        """ConfigService and GridMembersService share the one FileQueueRelayClient."""
+        from src.api import config_routes, gridmembers_routes
+        from src.main import create_app
+
+        app = create_app(_salt_config(tmp_path))
+
+        cfg_svc = app.dependency_overrides[config_routes.get_config_service]()
+        gm_svc = app.dependency_overrides[gridmembers_routes.get_gridmembers_service]()
+        assert cfg_svc._configstore._relay is gm_svc._store._relay
+
+    async def test_no_salt_config_leaves_config_unwired(self, tmp_path: Path):
+        from src.api import config_routes
+        from src.main import create_app
+
+        config = {
+            "server": {
+                "modules": {
+                    "statickeyauth": {"apiKey": "k", "anonymousCidr": "*"},
+                    "filedatastore": {"jobDir": str(tmp_path / "jobs")},
+                }
+            }
+        }
+        path = tmp_path / "sensoroni.json"
+        path.write_text(json.dumps(config))
+
+        app = create_app(str(path))
+        assert config_routes.get_config_service not in app.dependency_overrides
 
     async def test_module_level_app_stays_override_free(self, tmp_path: Path):
         """create_app must never mutate the shared module-level app."""

@@ -403,9 +403,9 @@ def update_setting_yaml(
 
     Descends ``mapped`` along ``sections``, creating intermediate maps for a new
     override hierarchy. At the leaf the value is type-coerced: a ``forced_type``
-    drives list/forced coercion (deferred to the next unit), otherwise the new
-    value is aligned to the existing value's type (or, for an absent value with a
-    default, to the default's best-guess type).
+    drives list/forced coercion (including the ``[]{}`` list-of-map per-field
+    coercion), otherwise the new value is aligned to the existing value's type
+    (or, for an absent value with a default, to the default's best-guess type).
     """
     if mapped is None or len(sections) == 0:
         raise ValueError("Settings map to section id mismatch")

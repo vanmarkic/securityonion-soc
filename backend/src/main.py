@@ -10,6 +10,7 @@ from src.adapters.elasticsearch.detectionstore import ElasticDetectionstore
 from src.adapters.elasticsearch.eventstore import ElasticEventstore
 from src.adapters.filedatastore.store import FileDatastore
 from src.adapters.kratos.userstore import KratosUserstore
+from src.adapters.salt.configstore import SaltConfigstore
 from src.adapters.salt.gridmembers import SaltGridMembersstore
 from src.adapters.salt.relay import FileQueueRelayClient
 from src.adapters.salt.userstore import SaltAdminUserstore
@@ -20,6 +21,7 @@ from src.adapters.stub.userstore import StubUserstore
 from src.api import (
     assistant_routes,
     case_routes,
+    config_routes,
     detection_routes,
     events_routes,
     gridmembers_routes,
@@ -62,6 +64,7 @@ from src.domain.user import User
 from src.ports.users import AdminUserstore, Userstore
 from src.services.assistant_service import AssistantService
 from src.services.case_service import CaseService
+from src.services.config_service import ConfigService
 from src.services.detection_service import DetectionService
 from src.services.events_service import EventsService
 from src.services.grid_service import GridService
@@ -261,12 +264,23 @@ def create_app(config_path: str | None = None) -> FastAPI:
         # rbac (StaticRbacAuthorizer) supplies scan_now() for the role reload
         # the AdminUserstore performs after add/role mutations.
         admin_userstore = SaltAdminUserstore(salt_relay, userstore, rbac)
+        # The Configstore reads/writes the on-disk saltstack tree and reuses the
+        # one salt_relay for its sync_* (highstate/state) commands so the
+        # file-queue connection isn't fanned out across the salt adapters.
+        salt_configstore = SaltConfigstore(
+            saltstack_dir=cfg.salt.saltstack_dir,
+            bypass_errors=cfg.salt.bypass_errors,
+            relay=salt_relay,
+        )
 
         application.dependency_overrides[gridmembers_routes.get_request_context_dep] = (
             auth
         )
         application.dependency_overrides[gridmembers_routes.get_gridmembers_service] = (
             lambda: GridMembersService(salt_gridmembers, rbac)
+        )
+        application.dependency_overrides[config_routes.get_config_service] = (
+            lambda: ConfigService(salt_configstore)
         )
     else:
         admin_userstore = _UnconfiguredAdminUserstore()
