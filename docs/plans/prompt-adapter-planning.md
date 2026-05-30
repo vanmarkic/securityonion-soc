@@ -57,8 +57,16 @@ All adapters are currently stubbed. The Go source code is in the same repo for r
 
 #### 5. Kratos (Tier 1 — real user management)
 - **Go source:** `server/modules/kratos/` (10 files, ~800 LOC)
-- **Implements:** `Userstore` and `AdminUserstore` Protocols from `src/ports/users.py`
-- **Behavior:** Communicates with Ory Kratos API for identity management. Maps Kratos identities to our User model. Handles: list users, get user by ID, create user, update profile, reset password, enable/disable, role assignment.
+- **Implements:** `Userstore` Protocol from `src/ports/users.py` — **READS ONLY**
+  (list users, get user by ID). **CORRECTION (verified 2026-05-30):** Kratos does
+  NOT implement `AdminUserstore`. The Go `kratosuserstore.go` has only
+  `GetUserById`/`GetUsers`/`GetUser`. The write-side `AdminUserstore`
+  (`server/adminuserstore.go`) is implemented by the **Salt** module
+  (`server/modules/salt/saltstore.go`), with `AddRole`/`DeleteRole` handled by
+  `staticrbac`. See `docs/plans/2026-05-30-remaining-adapters-roadmap.md`.
+- **Behavior:** Communicates with the Ory Kratos API for identity reads. Maps
+  Kratos identities to our User model. (Create/update/reset/enable/disable belong
+  to a future Salt adapter, not Kratos.)
 - **Dependencies:** `httpx` for Kratos API calls, running Kratos instance
 - **Config:** `host: str`, `admin_host: str` (Kratos public + admin API URLs)
 - **Test with:** Docker Compose with Kratos, integration tests against real instance
