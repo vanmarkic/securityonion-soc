@@ -14,17 +14,21 @@
 | `Eventstore`, `Casestore`, `Detectionstore`, `Assistantstore` | `elasticsearch` | `server/modules/elastic/` |
 | `Authorizer`, `Rolestore` | `staticrbac` | `server/modules/staticrbac/` |
 | `Userstore` (read: list, get-by-id) | `kratos` | `server/modules/kratos/` |
-| `GridMembersstore`, `AdminUserstore` + salt relay | `salt` (PR 1) | `server/modules/salt/` |
+| `Configstore`, `GridMembersstore`, `AdminUserstore` + salt relay | `salt` | `server/modules/salt/` |
 | `InfoProvider`, `Userstore` (dev) | `stub` | — |
 
 Characterization replay (`tests/characterization`) now runs against the wired
 `create_app()` and passes for every endpoint with an active adapter
 (see `docs/characterization-divergences.md`).
 
-**Salt adapter PR 1 (2026-05-30):** the file-queue relay client, `GridMembersstore`,
-and `AdminUserstore` are implemented and wired into `create_app` (gated on a
-`salt` config block). Only **`Configstore`** (the YAML-pillar engine, Phases 3–4
-of `2026-05-30-salt-adapter.md`) remains for PR 2.
+**Salt adapter COMPLETE (2026-05-30):** the file-queue relay client,
+`GridMembersstore`, `AdminUserstore` (PR 1), and the full `Configstore` —
+`get_settings` (defaults + local pillar overrides + annotations), `update_setting`
+(3-way routing + recursive set/delete + scalar/list/forcedType coercion),
+`sync_settings`/`sync_module` (PR 2) — are all implemented, reviewed against the
+Go source, and wired into `create_app` (gated on a `salt` config block). All three
+Salt-backed ports are satisfied. No SaltStack instance is needed to test (relay
+seam + fixture YAML trees). See `2026-05-30-salt-adapter.md`.
 
 ## Correction to `prompt-adapter-planning.md`
 
@@ -61,9 +65,10 @@ Ordered by a rough (value ÷ effort), infra-free first.
    `Configstore` (GetSettings/UpdateSetting/SyncSettings/SyncModule, the large
    YAML/type-coercion engine), `GridMembersstore` (GetMembers/ManageMember), and
    `AdminUserstore` (AddUser/Delete/UpdateProfile/ResetPassword/Enable/Disable).
-   **PR 1 DONE 2026-05-30:** relay client + `GridMembersstore` + `AdminUserstore`
-   implemented, reviewed, and wired. **Remaining (PR 2):** only `Configstore`
-   (Phases 3–4 of `2026-05-30-salt-adapter.md`).
+   **DONE 2026-05-30 (PR 1 + PR 2):** relay client + `GridMembersstore` +
+   `AdminUserstore` + the full `Configstore` (YAML-pillar read/write + type
+   coercion + sync) implemented, reviewed against Go, and wired into `create_app`.
+   This Tier-B item is complete.
    Needs a SaltStack master + filesystem layout; `execCommand` shells out. High UI
    value (config page, grid members, user management) but the biggest single port
    surface left. Recommend splitting per port and mocking `execCommand` for units.
