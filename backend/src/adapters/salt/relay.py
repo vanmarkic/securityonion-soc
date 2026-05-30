@@ -59,12 +59,15 @@ class FileQueueRelayClient:
         queue.mkdir(parents=True, exist_ok=True)
 
         request_file = queue / command_id
-        request_file.write_text(json.dumps(args))
+        # Inject command_id into the payload without mutating the caller's dict,
+        # matching Go execCommand (args["command_id"] = id before writing).
+        payload = {**args, "command_id": command_id}
+        request_file.write_text(json.dumps(payload))
 
         response_file = queue / f"{command_id}.response"
         effective_timeout_ms = max(self.timeout_ms, timeout_ms or 0)
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         deadline = loop.time() + effective_timeout_ms / 1000
         while loop.time() < deadline:
             if response_file.exists():
@@ -72,8 +75,9 @@ class FileQueueRelayClient:
                 response_file.unlink()
                 return response
             # Very short timeouts are used for testing, where the response is
-            # already mocked; skip the inter-poll sleep in that case.
-            if effective_timeout_ms > 10:
+            # already mocked; skip the inter-poll sleep in that case. Gate on the
+            # instance timeout, matching Go's instance-level guard (store.timeoutMs > 10).
+            if self.timeout_ms > 10:
                 await asyncio.sleep(1)
 
         raise SaltRelayDown

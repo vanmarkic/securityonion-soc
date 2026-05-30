@@ -1,5 +1,6 @@
 """Tests for the Salt relay seam — fake + file-queue clients."""
 
+import asyncio
 import json
 from pathlib import Path
 
@@ -47,8 +48,13 @@ class TestFileQueueRelayClient:
         queue_dir = tmp_path / "queue"
         queue_dir.mkdir()
         client = FileQueueRelayClient(str(queue_dir), timeout_ms=5)
+        # wait_for guards against a regression in the sleep-skip shortcut:
+        # a short instance timeout must not block on asyncio.sleep(1).
         with pytest.raises(SaltRelayDown):
-            await client.exec_command("req1_manage", {"command": "manage"})
+            await asyncio.wait_for(
+                client.exec_command("req1_manage", {"command": "manage"}),
+                timeout=0.5,
+            )
 
     async def test_request_file_written_with_json(self, tmp_path: Path):
         queue_dir = tmp_path / "queue"
@@ -62,7 +68,14 @@ class TestFileQueueRelayClient:
 
         request_file = queue_dir / command_id
         assert request_file.exists()
-        assert json.loads(request_file.read_text()) == args
+        payload = json.loads(request_file.read_text())
+        # command_id is injected into the payload, matching Go execCommand.
+        assert payload["command_id"] == command_id
+        # The original args are still present in the written payload.
+        assert payload["command"] == "manage"
+        assert payload["minion"] == "node-x"
+        # The caller's dict is not mutated.
+        assert "command_id" not in args
 
     async def test_creates_queue_dir_when_missing(self, tmp_path: Path):
         queue_dir = tmp_path / "missing" / "queue"
