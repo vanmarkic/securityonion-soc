@@ -36,6 +36,15 @@ class KratosConfig:
     host_url: str = ""
 
 
+@dataclass(frozen=True)
+class SaltConfig:
+    timeout_ms: int = 30_000
+    long_relay_timeout_ms: int = 120_000
+    saltstack_dir: str = "/opt/so/saltstack"
+    queue_dir: str = "/opt/so/conf/soc/queue"
+    bypass_errors: bool = False
+
+
 # Maps the sensoroni ``elastic`` module's camelCase JSON keys to the snake_case
 # fields of ``ElasticConfig`` (see server/modules/elastic/elastic.go). Only keys
 # present in the JSON are forwarded; everything else falls back to the
@@ -91,6 +100,32 @@ def _parse_elastic(modules: dict[str, Any]) -> ElasticConfig | None:
     return ElasticConfig(**kwargs)
 
 
+# Maps the sensoroni ``salt`` module's camelCase JSON keys to the snake_case
+# fields of ``SaltConfig`` (see server/modules/salt/salt.go). Only keys present
+# in the JSON are forwarded; everything else falls back to the ``SaltConfig``
+# dataclass defaults.
+_SALT_KEY_MAP: dict[str, str] = {
+    "timeoutMs": "timeout_ms",
+    "longRelayTimeoutMs": "long_relay_timeout_ms",
+    "saltstackDir": "saltstack_dir",
+    "queueDir": "queue_dir",
+    "bypassErrors": "bypass_errors",
+}
+
+
+def _parse_salt(modules: dict[str, Any]) -> SaltConfig | None:
+    """Build a SaltConfig from the ``salt`` module block.
+
+    Returns ``None`` when the block is absent so wiring can stay absent-safe
+    (default ``create_app`` leaves the Salt relay unwired).
+    """
+    raw = modules.get("salt")
+    if raw is None:
+        return None
+    kwargs = {snake: raw[camel] for camel, snake in _SALT_KEY_MAP.items() if camel in raw}
+    return SaltConfig(**kwargs)
+
+
 @dataclass(frozen=True)
 class AppConfig:
     statickeyauth: StaticKeyAuthConfig = field(default_factory=StaticKeyAuthConfig)
@@ -98,6 +133,7 @@ class AppConfig:
     staticrbac: StaticRbacConfig = field(default_factory=StaticRbacConfig)
     kratos: KratosConfig = field(default_factory=KratosConfig)
     elasticsearch: ElasticConfig | None = None
+    salt: SaltConfig | None = None
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> AppConfig:
@@ -128,6 +164,7 @@ class AppConfig:
                 host_url=kra.get("hostUrl", ""),
             ),
             elasticsearch=_parse_elastic(modules),
+            salt=_parse_salt(modules),
         )
 
 

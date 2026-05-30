@@ -80,3 +80,40 @@ class TestLoadConfig:
         }
         cfg = AppConfig.from_dict(raw)
         assert cfg.kratos.host_url == "http://kratos:4434"
+
+    def test_salt_config_full_block(self):
+        raw = {
+            "server": {
+                "modules": {
+                    "salt": {
+                        "timeoutMs": 15000,
+                        "longRelayTimeoutMs": 60000,
+                        "saltstackDir": "/srv/saltstack",
+                        "queueDir": "/srv/queue",
+                        "bypassErrors": True,
+                    }
+                }
+            }
+        }
+        cfg = AppConfig.from_dict(raw)
+        assert cfg.salt is not None
+        assert cfg.salt.timeout_ms == 15000
+        assert cfg.salt.long_relay_timeout_ms == 60000
+        assert cfg.salt.saltstack_dir == "/srv/saltstack"
+        assert cfg.salt.queue_dir == "/srv/queue"
+        assert cfg.salt.bypass_errors is True
+
+    def test_salt_config_absent_is_none(self):
+        raw = {"server": {"modules": {}}}
+        cfg = AppConfig.from_dict(raw)
+        assert cfg.salt is None
+
+    def test_salt_config_missing_keys_use_defaults(self):
+        raw = {"server": {"modules": {"salt": {"timeoutMs": 5000}}}}
+        cfg = AppConfig.from_dict(raw)
+        assert cfg.salt is not None
+        assert cfg.salt.timeout_ms == 5000
+        assert cfg.salt.long_relay_timeout_ms == 120_000
+        assert cfg.salt.saltstack_dir == "/opt/so/saltstack"
+        assert cfg.salt.queue_dir == "/opt/so/conf/soc/queue"
+        assert cfg.salt.bypass_errors is False
