@@ -18,7 +18,7 @@ from typing import Any
 import yaml  # type: ignore[import-untyped]
 
 from src.adapters.salt.jinja import unescape_jinja
-from src.domain.config import Setting, new_setting
+from src.domain.config import Setting, UiElement, new_setting
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,10 @@ def render_scalar(value: Any) -> str:
     lowercase ``true``/``false`` and a nil value as ``<nil>``. We special-case
     those two so the emitted setting value is byte-identical to the Go store
     (e.g. the ``myapp.bool`` default renders as ``"true"``).
+
+    Caveat: whole-number floats (Go ``3`` vs Python ``3.0``) and ``inf``/``nan``
+    do not render byte-identically to Go's ``%v``; these fall outside the
+    realistic Salt-defaults fixture space and are not special-cased here.
     """
     if isinstance(value, bool):
         return "true" if value else "false"
@@ -173,4 +177,233 @@ def _cmp(a: Setting, b: Setting) -> int:
 def sort_settings(settings: list[Setting]) -> list[Setting]:
     """Sort settings using Go's sortSettings comparator (advanced ids trail)."""
     settings.sort(key=cmp_to_key(_cmp))
+    return settings
+
+
+def cast_to_string_array(value: Any) -> list[str]:
+    """Coerce a YAML list into a list of strings (mirror castToStringArray).
+
+    Go asserts ``value.([]interface{})`` then ``tmp.(string)`` on each item, so a
+    non-list value or a non-string item raises (matching Go's panic semantics).
+    """
+    if not isinstance(value, list):
+        raise TypeError(f"expected a list, got {type(value).__name__}")
+    out: list[str] = []
+    for item in value:
+        if not isinstance(item, str):
+            raise TypeError(f"expected a string list item, got {type(item).__name__}")
+        out.append(item)
+    return out
+
+
+def read_file(path: str) -> str:
+    """Read a file's contents as text (mirror saltstore.readFile)."""
+    return Path(path).read_text()
+
+
+def rel_path_from_id(setting_id: str) -> str:
+    """Map a setting id to a salt file relative path (mirror relPathFromId).
+
+    Example: ``soc.files.soc.banner_md`` -> ``soc/files/soc/banner.md``.
+    """
+    relpath = setting_id.replace(".", "/")
+    relpath = relpath.replace("__", ".")
+    relpath = relpath.replace("..", "____")  # Shenannigans (faithful to Go)
+    return relpath
+
+
+def _parse_ui_element(tmp_map: dict[str, Any]) -> UiElement:
+    """Build a UiElement from one annotation map (mirror the inner switch)."""
+    element = UiElement()
+    for key, value in tmp_map.items():
+        if key == "field":
+            element.field = value
+        elif key == "label":
+            element.label = value
+        elif key == "forcedType":
+            element.forced_type = value
+        elif key == "multiline":
+            element.multiline = value
+        elif key == "options":
+            element.options = cast_to_string_array(value)
+        elif key == "default":
+            element.default = value
+        elif key == "required":
+            element.required = value
+        elif key == "readonly":
+            element.readonly = value
+        elif key == "regex":
+            element.regex = render_scalar(value)
+        elif key == "regexFailureMessage":
+            element.regex_failure_message = value
+    return element
+
+
+def update_setting_with_annotation(
+    setting: Setting,
+    annotations: dict[str, Any],
+    *,
+    saltstack_dir: str = "",
+) -> None:
+    """Apply an annotation block to a Setting (port updateSettingWithAnnotation).
+
+    A switch over annotation keys mapping each onto its corresponding ``Setting``
+    field. String-valued keys go through ``render_scalar`` (Go's ``%v``); boolean
+    and string-typed keys are taken as-is (Go's ``value.(bool)`` / ``.(string)``).
+    The ``file`` annotation additionally reads default/value contents from the
+    saltstack tree (needs ``saltstack_dir``).
+    """
+    for key, value in annotations.items():
+        if key == "title":
+            setting.title = render_scalar(value)
+        elif key == "description":
+            setting.description = render_scalar(value)
+        elif key == "readonly":
+            setting.readonly = value
+        elif key == "readonlyUi":
+            setting.readonly_ui = value
+        elif key == "global":
+            setting.global_ = value
+        elif key == "multiline":
+            setting.multiline = value
+        elif key == "node":
+            setting.node = value
+        elif key == "sensitive":
+            setting.sensitive = value
+        elif key == "regex":
+            setting.regex = render_scalar(value)
+        elif key == "regexFailureMessage":
+            setting.regex_failure_message = render_scalar(value)
+        elif key == "advanced":
+            setting.advanced = value
+        elif key == "helpLink":
+            setting.help_link = render_scalar(value)
+        elif key == "syntax":
+            setting.syntax = render_scalar(value)
+        elif key == "forcedType":
+            setting.forced_type = render_scalar(value)
+        elif key == "file":
+            # Special annotation: the contents of a salt file become the value.
+            setting.file = value
+            if setting.file:
+                setting.multiline = True
+                relpath = rel_path_from_id(setting.id)
+                try:
+                    setting.default = read_file(f"{saltstack_dir}/default/salt/{relpath}")
+                    setting.default_available = True
+                except OSError:
+                    pass
+                try:
+                    setting.value = read_file(f"{saltstack_dir}/local/salt/{relpath}")
+                except OSError:
+                    setting.value = ""
+                if setting.value == "":
+                    setting.value = setting.default
+        elif key == "duplicates":
+            setting.duplicates = value
+        elif key == "jinjaEscaped":
+            setting.jinja_escaped = value
+        elif key == "options":
+            setting.options = cast_to_string_array(value)
+        elif key == "optionSeparator":
+            setting.option_separator = value
+        elif key == "required":
+            setting.required = value
+        elif key == "uiElements":
+            for tmp in value:
+                if isinstance(tmp, dict):
+                    setting.ui_elements.append(_parse_ui_element(tmp))
+                else:
+                    logger.error("Invalid annotation; cannot cast to map")
+        elif key == "uiElementsDeleteMessage":
+            setting.ui_elements_delete_message = value
+
+
+def recursively_parse_annotations(
+    settings: list[Setting],
+    mapped: dict[str, Any],
+    prefix: str,
+    *,
+    saltstack_dir: str = "",
+) -> tuple[list[Setting], bool]:
+    """Attach static annotation metadata onto settings (recursivelyParseAnnotations).
+
+    Walks the nested annotation map, building a dotted id as it descends. A node
+    is an "end of branch" (an annotation block, not just a grouping container)
+    when recursing into it reports ``found_annotation`` — i.e. that child level
+    contained a non-dict value (an actual annotation key like ``title``). At an
+    end-of-branch the matching existing setting(s) (by id) are updated via
+    ``update_setting_with_annotation``, applying the sensitive masking rule; if
+    no setting exists, an annotation-only setting is created.
+
+    Returns ``(settings, found_annotation)`` where ``found_annotation`` is True
+    iff THIS level held a non-dict child (signalling the parent it is at an
+    end-of-branch).
+    """
+    found_annotation = False
+    for setting_id, value in mapped.items():
+        new_prefix = prefix
+        if new_prefix != "":
+            new_prefix = new_prefix + "."
+        new_id = new_prefix + setting_id
+
+        if isinstance(value, dict):
+            settings, end_of_branch = recursively_parse_annotations(
+                settings, value, new_id, saltstack_dir=saltstack_dir
+            )
+            if end_of_branch:
+                found_existing = False
+                for setting in settings:
+                    if setting.id == new_id:
+                        update_setting_with_annotation(
+                            setting, value, saltstack_dir=saltstack_dir
+                        )
+                        # Do not allow sensitive settings to be transmitted to
+                        # remote API clients.
+                        if setting.sensitive:
+                            setting.value = "******"
+                            setting.default = ""
+                        found_existing = True
+                if not found_existing:
+                    # Add a new setting since none exists for this annotation.
+                    setting = new_setting(new_id)
+                    update_setting_with_annotation(
+                        setting, value, saltstack_dir=saltstack_dir
+                    )
+                    settings.append(setting)
+                    logger.debug("Found annotation without a setting (id=%s)", new_id)
+        else:
+            found_annotation = True
+    return settings, found_annotation
+
+
+def parse_advanced(
+    path: str,
+    settings: list[Setting],
+    minion: str,
+    setting_id: str,
+) -> list[Setting]:
+    """Read an advanced (raw YAML) override file into a Setting (parseAdvanced).
+
+    The whole file content becomes a single multiline ``yaml``-syntax setting. A
+    minion-scoped file yields a node setting; otherwise a global one. A read
+    error is swallowed (matching Go's ``if err == nil`` guard).
+    """
+    try:
+        content = read_file(path)
+    except OSError:
+        return settings
+
+    setting = new_setting(setting_id)
+    if minion != "":
+        setting.global_ = False
+        setting.node = True
+    else:
+        setting.global_ = True
+        setting.node = False
+    setting.value = content
+    setting.node_id = minion
+    setting.multiline = True
+    setting.syntax = "yaml"
+    settings.append(setting)
     return settings

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -18,6 +19,27 @@ def is_valid_minion_id(id: str) -> bool:
 def is_valid_setting_id(id: str) -> bool:
     """Return True if id contains allowed chars (adds slash, colon, asterisk)."""
     return bool(_SETTING_ID_RE.match(id))
+
+
+class UiElement(BaseModel):
+    """Describes how the UI should present a single field for input.
+
+    Ported from Go model/config.go UiElement.
+    """
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    field: str = ""
+    label: str = ""
+    multiline: bool = False
+    forced_type: str = Field(default="", alias="forcedType")
+    options: list[str] = Field(default_factory=list)
+    option_separator: str = Field(default="", alias="optionSeparator")
+    default: Any = None
+    required: bool = False
+    readonly: bool = False
+    regex: str = ""
+    regex_failure_message: str = Field(default="", alias="regexFailureMessage")
 
 
 class Setting(BaseModel):
@@ -50,6 +72,8 @@ class Setting(BaseModel):
     jinja_escaped: bool = Field(default=False, alias="jinjaEscaped")
     options: list[str] = Field(default_factory=list)
     option_separator: str = Field(default="", alias="optionSeparator")
+    ui_elements: list[UiElement] = Field(default_factory=list, alias="uiElements")
+    ui_elements_delete_message: str = Field(default="", alias="uiElementsDeleteMessage")
 
     def is_duplicated_setting(self) -> bool:
         """Assume descriptionless settings are duplicated."""

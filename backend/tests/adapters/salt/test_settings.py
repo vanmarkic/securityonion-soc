@@ -7,14 +7,20 @@ filter_settings, and sort_settings.
 
 from pathlib import Path
 
+import pytest
+
 from src.adapters.salt.settings import (
+    cast_to_string_array,
     convert_to_json,
     filter_settings,
+    parse_advanced,
     parse_yaml,
     post_process,
+    recursively_parse_annotations,
     recursively_parse_settings,
     render_scalar,
     sort_settings,
+    update_setting_with_annotation,
 )
 from src.domain.config import Setting, new_setting
 
@@ -222,3 +228,239 @@ class TestSortSettings:
         assert ids[-1] == "myapp.advanced"
         # Non-advanced ids keep ascending order relative to each other.
         assert ids.index("myapp.bar") < ids.index("myapp.zdef")
+
+
+class TestCastToStringArray:
+    def test_casts_list_of_strings(self):
+        assert cast_to_string_array(["a", "b", "c"]) == ["a", "b", "c"]
+
+    def test_empty_list_yields_empty(self):
+        assert cast_to_string_array([]) == []
+
+    def test_non_list_raises(self):
+        # Go asserts value.([]interface{}); a non-list panics. We raise instead.
+        with pytest.raises(TypeError):
+            cast_to_string_array("not-a-list")
+
+    def test_non_string_item_raises(self):
+        # Go asserts tmp.(string) on each item.
+        with pytest.raises(TypeError):
+            cast_to_string_array(["ok", 5])
+
+
+class TestUpdateSettingWithAnnotation:
+    def test_string_keys_use_go_percent_v(self):
+        s = new_setting("x")
+        update_setting_with_annotation(
+            s,
+            {
+                "title": "My Title",
+                "description": "desc",
+                "regex": "^a$",
+                "regexFailureMessage": "nope",
+                "helpLink": "page",
+                "syntax": "yaml",
+                "forcedType": "[]int",
+            },
+        )
+        assert s.title == "My Title"
+        assert s.description == "desc"
+        assert s.regex == "^a$"
+        assert s.regex_failure_message == "nope"
+        assert s.help_link == "page"
+        assert s.syntax == "yaml"
+        assert s.forced_type == "[]int"
+
+    def test_bool_keys(self):
+        s = new_setting("x")
+        update_setting_with_annotation(
+            s,
+            {
+                "readonly": True,
+                "readonlyUi": True,
+                "global": True,
+                "multiline": True,
+                "node": True,
+                "sensitive": True,
+                "advanced": True,
+                "duplicates": True,
+                "jinjaEscaped": True,
+                "required": True,
+            },
+        )
+        assert s.readonly is True
+        assert s.readonly_ui is True
+        assert s.global_ is True
+        assert s.multiline is True
+        assert s.node is True
+        assert s.sensitive is True
+        assert s.advanced is True
+        assert s.duplicates is True
+        assert s.jinja_escaped is True
+        assert s.required is True
+
+    def test_options_and_separator(self):
+        s = new_setting("x")
+        update_setting_with_annotation(
+            s, {"options": ["one", "two"], "optionSeparator": ","}
+        )
+        assert s.options == ["one", "two"]
+        assert s.option_separator == ","
+
+    def test_ui_elements_built_with_inner_switch(self):
+        s = new_setting("x")
+        update_setting_with_annotation(
+            s,
+            {
+                "uiElements": [
+                    {
+                        "field": "something",
+                        "label": "something nice",
+                        "forcedType": "bool",
+                        "multiline": False,
+                        "default": True,
+                        "required": False,
+                        "readonly": True,
+                    },
+                    {
+                        "field": "another",
+                        "label": "another thing",
+                        "forcedType": "[]string",
+                        "options": ["blue", "red"],
+                        "default": "red",
+                    },
+                ],
+                "uiElementsDeleteMessage": "are you sure?",
+            },
+        )
+        assert len(s.ui_elements) == 2
+        first = s.ui_elements[0]
+        assert first.field == "something"
+        assert first.label == "something nice"
+        assert first.forced_type == "bool"
+        assert first.readonly is True
+        assert first.default is True
+        second = s.ui_elements[1]
+        assert second.options == ["blue", "red"]
+        assert second.default == "red"
+        assert s.ui_elements_delete_message == "are you sure?"
+
+    def test_ui_elements_non_map_item_skipped(self):
+        s = new_setting("x")
+        update_setting_with_annotation(s, {"uiElements": ["not-a-map", {"field": "ok"}]})
+        assert len(s.ui_elements) == 1
+        assert s.ui_elements[0].field == "ok"
+
+    def test_unknown_keys_ignored(self):
+        s = new_setting("x")
+        update_setting_with_annotation(s, {"bogus": "value", "title": "kept"})
+        assert s.title == "kept"
+
+    def test_file_annotation_reads_default_and_local(self, tmp_path: Path):
+        # relPathFromId("myapp.foo__txt") -> myapp/foo.txt
+        (tmp_path / "default" / "salt" / "myapp").mkdir(parents=True)
+        (tmp_path / "local" / "salt" / "myapp").mkdir(parents=True)
+        (tmp_path / "default" / "salt" / "myapp" / "foo.txt").write_text("anything")
+        (tmp_path / "local" / "salt" / "myapp" / "foo.txt").write_text("old")
+
+        s = new_setting("myapp.foo__txt")
+        update_setting_with_annotation(s, {"file": True}, saltstack_dir=str(tmp_path))
+        assert s.file is True
+        assert s.multiline is True
+        assert s.default == "anything"
+        assert s.default_available is True
+        assert s.value == "old"
+
+    def test_file_annotation_value_falls_back_to_default(self, tmp_path: Path):
+        (tmp_path / "default" / "salt" / "myapp").mkdir(parents=True)
+        (tmp_path / "default" / "salt" / "myapp" / "foo.txt").write_text("anything")
+        # No local file; value should fall back to the default contents.
+        s = new_setting("myapp.foo__txt")
+        update_setting_with_annotation(s, {"file": True}, saltstack_dir=str(tmp_path))
+        assert s.value == "anything"
+
+
+class TestRecursivelyParseAnnotations:
+    def test_end_of_branch_detection_attaches_to_existing(self):
+        # A node with a non-dict child is an end-of-branch; its annotations apply
+        # to the existing same-id setting.
+        existing = new_setting("myapp.int")
+        existing.value = "123"
+        out, found = recursively_parse_annotations(
+            [existing], {"myapp": {"int": {"description": "d", "global": True}}}, ""
+        )
+        assert found is False  # top level had only a dict child
+        target = next(s for s in out if s.id == "myapp.int")
+        assert target.description == "d"
+        assert target.global_ is True
+        # No annotation-only setting created for the grouping node "myapp".
+        assert not any(s.id == "myapp" for s in out)
+
+    def test_annotation_only_setting_is_created(self):
+        out, _ = recursively_parse_annotations(
+            [], {"myapp": {"newkey": {"description": "brand new"}}}, ""
+        )
+        created = next(s for s in out if s.id == "myapp.newkey")
+        assert created.description == "brand new"
+
+    def test_grouping_node_is_not_end_of_branch(self):
+        # "myapp" only has dict children, so it must not become a setting.
+        out, _ = recursively_parse_annotations(
+            [], {"myapp": {"a": {"title": "A"}, "b": {"title": "B"}}}, ""
+        )
+        ids = {s.id for s in out}
+        assert ids == {"myapp.a", "myapp.b"}
+
+    def test_found_annotation_true_when_non_dict_child(self):
+        # A level holding a non-dict value reports found_annotation True upward.
+        _out, found = recursively_parse_annotations([], {"title": "leaf"}, "")
+        assert found is True
+
+    def test_sensitive_masks_value_and_clears_default(self):
+        existing = new_setting("myapp.secret")
+        existing.value = "supersecret"
+        existing.default = "supersecret"
+        out, _ = recursively_parse_annotations(
+            [existing], {"myapp": {"secret": {"sensitive": True}}}, ""
+        )
+        masked = next(s for s in out if s.id == "myapp.secret")
+        assert masked.value == "******"
+        assert masked.default == ""
+
+    def test_applies_to_all_matching_existing_settings(self):
+        # Both a global and a node-scoped setting share the id; annotations apply
+        # to each (Go iterates all settings, not just the first match).
+        g = new_setting("myapp.foo")
+        n = new_setting("myapp.foo")
+        n.node_id = "node1"
+        out, _ = recursively_parse_annotations(
+            [g, n], {"myapp": {"foo": {"description": "shared"}}}, ""
+        )
+        assert all(s.description == "shared" for s in out if s.id == "myapp.foo")
+
+
+class TestParseAdvanced:
+    def test_global_advanced_setting(self, tmp_path: Path):
+        f = tmp_path / "adv.sls"
+        f.write_text("myapp:\n  global: advanced\n")
+        out = parse_advanced(str(f), [], "", "myapp.advanced")
+        s = next(x for x in out if x.id == "myapp.advanced")
+        assert s.value == "myapp:\n  global: advanced\n"
+        assert s.global_ is True
+        assert s.node is False
+        assert s.node_id == ""
+        assert s.multiline is True
+        assert s.syntax == "yaml"
+
+    def test_node_advanced_setting(self, tmp_path: Path):
+        f = tmp_path / "adv.sls"
+        f.write_text("content\n")
+        out = parse_advanced(str(f), [], "node1", "advanced")
+        s = next(x for x in out if x.id == "advanced")
+        assert s.global_ is False
+        assert s.node is True
+        assert s.node_id == "node1"
+
+    def test_missing_file_is_swallowed(self, tmp_path: Path):
+        out = parse_advanced(str(tmp_path / "missing.sls"), [], "", "advanced")
+        assert out == []
