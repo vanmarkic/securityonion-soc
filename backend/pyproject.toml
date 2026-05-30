@@ -8,6 +8,7 @@ dependencies = [
     "pydantic>=2.10.0",
     "httpx>=0.28.0",
     "elasticsearch[async]>=8.12,<9",
+    "pyyaml>=6",
 ]
 
 [project.optional-dependencies]
