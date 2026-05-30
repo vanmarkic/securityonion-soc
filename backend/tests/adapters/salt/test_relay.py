@@ -77,6 +77,24 @@ class TestFileQueueRelayClient:
         # The caller's dict is not mutated.
         assert "command_id" not in args
 
+    async def test_empty_response_is_relay_down(self, tmp_path: Path):
+        # An empty/whitespace-only response file means the relay produced no
+        # result; Go maps this to ERROR_SALT_RELAY_DOWN rather than a success.
+        queue_dir = tmp_path / "queue"
+        queue_dir.mkdir()
+        command_id = "req1_manage"
+        response_file = queue_dir / f"{command_id}.response"
+        response_file.write_text("   \n")
+
+        client = FileQueueRelayClient(str(queue_dir), timeout_ms=5)
+        with pytest.raises(SaltRelayDown):
+            await asyncio.wait_for(
+                client.exec_command(command_id, {"command": "manage"}),
+                timeout=0.5,
+            )
+        # The (empty) response file is still consumed.
+        assert not response_file.exists()
+
     async def test_creates_queue_dir_when_missing(self, tmp_path: Path):
         queue_dir = tmp_path / "missing" / "queue"
         client = FileQueueRelayClient(str(queue_dir), timeout_ms=5)

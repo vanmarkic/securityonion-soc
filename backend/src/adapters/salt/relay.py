@@ -73,7 +73,13 @@ class FileQueueRelayClient:
             if response_file.exists():
                 response = response_file.read_text().strip()
                 response_file.unlink()
-                return response
+                # Go reads, strips, removes, and breaks on the first response
+                # file — then maps an empty body to ERROR_SALT_RELAY_DOWN
+                # (saltstore.go:104-118). Returning "" as success would mask a
+                # down relay, so an empty response falls through to raise.
+                if response:
+                    return response
+                break
             # Very short timeouts are used for testing, where the response is
             # already mocked; skip the inter-poll sleep in that case. Gate on the
             # instance timeout, matching Go's instance-level guard (store.timeoutMs > 10).
