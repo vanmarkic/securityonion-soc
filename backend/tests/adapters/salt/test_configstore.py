@@ -449,10 +449,12 @@ class TestGetSettingsFullReadPath:
 
 
 class TestUnimplementedWriteMethods:
-    async def test_update_setting_not_implemented(self, tmp_path: Path):
+    async def test_update_setting_rejects_empty_id(self, tmp_path: Path):
+        # update_setting is implemented now (see test_configstore_write.py); an
+        # empty id is still rejected before any I/O.
         store = SaltConfigstore(str(tmp_path))
-        with pytest.raises(NotImplementedError):
-            await store.update_setting(Setting(id="x"), remove=False)
+        with pytest.raises(ValueError, match="Invalid setting id"):
+            await store.update_setting(Setting(id=""), remove=False)
 
     async def test_sync_settings_not_implemented(self, tmp_path: Path):
         store = SaltConfigstore(str(tmp_path))
