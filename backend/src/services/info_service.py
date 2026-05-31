@@ -26,6 +26,7 @@ class InfoService:
         license_text, license_status, license_key = await self._info_provider.get_license_info()
         timezones = await self._info_provider.get_timezones()
         mgmt_mac = await self._info_provider.get_mgmt_mac()
+        parameters = await self._info_provider.get_parameters()
 
         user = await self._userstore.get_user_by_id(user_id)
         force_otp = False
@@ -35,7 +36,7 @@ class InfoService:
         return Info(
             version=version,
             license=license_text,
-            parameters=None,
+            parameters=parameters,
             elastic_version=elastic_version,
             user_id=user_id,
             timezones=timezones,

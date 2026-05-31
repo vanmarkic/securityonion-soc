@@ -120,6 +120,10 @@ NON_DETERMINISTIC_FIELDS = frozenset({
     "srvToken", "createTime", "updateTime", "completeTime",
     "deleteTime", "timestamp", "onlineTime", "epochTime",
     "id", "userId", "sessionId",
+    # /api/info "parameters" is the server's ClientParameters config: the golden
+    # was captured null on an unconfigured Go server, while a configured server
+    # (and our StubInfoProvider) returns a populated object. Config-dependent.
+    "parameters",
 })
 
 

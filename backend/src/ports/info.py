@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from src.domain.info import LicenseKey
 
@@ -20,3 +20,5 @@ class InfoProvider(Protocol):
     async def get_timezones(self) -> list[str]: ...
 
     async def get_mgmt_mac(self) -> str: ...
+
+    async def get_parameters(self) -> dict[str, Any]: ...

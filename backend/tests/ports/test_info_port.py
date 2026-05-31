@@ -34,6 +34,9 @@ class FakeInfoProvider:
     async def get_mgmt_mac(self) -> str:
         return "aa:bb:cc:dd:ee:ff"
 
+    async def get_parameters(self) -> dict:
+        return {"docsUrl": "https://docs.example/"}
+
 
 class TestInfoProvider:
     def test_fake_satisfies_protocol(self):

@@ -41,6 +41,9 @@ class FakeInfoProvider:
     async def get_timezones(self) -> list[str]:
         return ["UTC"]
 
+    async def get_parameters(self) -> dict:
+        return {}
+
     async def get_mgmt_mac(self) -> str:
         return "unknown"
 

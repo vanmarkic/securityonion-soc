@@ -44,6 +44,16 @@ class TestStubInfoProvider:
         mac = await provider.get_mgmt_mac()
         assert isinstance(mac, str)
 
+    async def test_get_parameters_is_non_null_with_client_fields(self):
+        provider = StubInfoProvider()
+        params = await provider.get_parameters()
+        # Must be a non-null object — the frontend binds parameters.docsUrl etc.
+        assert isinstance(params, dict)
+        for key in ("docsUrl", "cheatsheetUrl", "releaseNotesUrl"):
+            assert isinstance(params[key], str) and params[key]
+        assert isinstance(params["inactiveTools"], list)
+        assert isinstance(params["tools"], list)
+
 
 class TestStubUserstore:
     def test_satisfies_protocol(self):

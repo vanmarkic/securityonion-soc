@@ -39,6 +39,9 @@ class FakeInfoProvider:
     async def get_mgmt_mac(self) -> str:
         return "unknown"
 
+    async def get_parameters(self) -> dict:
+        return {}
+
 
 class FakeUserstore:
     def __init__(self, users: list[User] | None = None):
@@ -131,7 +134,7 @@ class TestInfoService:
             userstore=FakeUserstore(),
         )
         result = await service.get_info(user_id="user-1")
-        assert result.parameters is None
+        assert result.parameters == {}  # from the provider's get_parameters()
         assert result.srv_token == ""
         assert result.force_user_otp is False
         assert result.custom_reports == {}
