@@ -52,6 +52,7 @@ from src.api.roles_routes import router as roles_router
 from src.api.stream_routes import router as stream_router
 from src.api.users_routes import router as users_router
 from src.api.util_routes import router as util_router
+from src.api.ws_routes import router as ws_router
 from src.config import AppConfig, load_config
 from src.domain.assistant import (
     BalanceResponse,
@@ -100,6 +101,9 @@ def _build_base_app() -> FastAPI:
     application.include_router(query_router, prefix="/api")
     application.include_router(playbook_router, prefix="/api")
     application.include_router(stream_router, prefix="/api")
+    # The manager real-time WebSocket lives at /ws (root, NOT under /api) to match
+    # the Vue client's wsUrl = location.host + location.pathname + 'ws'.
+    application.include_router(ws_router)
     application.include_router(users_router, prefix="/api")
     application.include_router(roles_router, prefix="/api")
     application.include_router(clients_router, prefix="/api")
